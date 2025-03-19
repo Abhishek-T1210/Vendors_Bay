@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor's Bay - TSC Tools</title>
+    <link rel="icon" type="image/png" href="/static/squares.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background-size: cover;
+            display: flex;
+            color: #333;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(6px);
+            z-index: -1;
+        }
+
+        .sidebar {
+            width: 260px;
+            height: calc(100vh - 80px);
+            background: linear-gradient(180deg, #1e272e, #2c3e50);
+            position: fixed;
+            top: 80px;
+            left: 0;
+            z-index: 998; /* Below navbar */
+            border-radius: 0 10px 10px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 18px 35px;
+            color: #ecf0f1;
+            text-decoration: none;
+            font-size: 1.15rem;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background: linear-gradient(90deg, rgba(52, 152, 219, 0.2), transparent);
+            color: #fff;
+            transform: scale(1.02);
+        }
+
+        .sidebar a.active {
+            background: linear-gradient(90deg, rgba(52, 152, 219, 0.4), transparent);
+            color: #fff;
+            border-left: 4px solid #3498db;
+            padding-left: 31px;
+        }
+
+        .sidebar a:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar a::before {
+            content: '▶';
+            margin-right: 10px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .sidebar .powered-by {
+            padding: 20px 35px;
+            color: #bdc3c7;
+            font-size: 0.9rem;
+            font-weight: 400;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            position: relative;
+            height: 100vh;
+            padding-top: 80px;
+            width: calc(100% - 260px); /* Adjust for sidebar on desktop */
+        }
+
+        .navbar {
+            width: 100vw; /* Full viewport width */
+            height: 80px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000; /* Above sidebar */
+            transition: box-shadow 0.3s ease;
+        }
+
+        .navbar.sticky {
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            height: 40px;
+            width: auto;
+            filter: brightness(0);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .brand-name {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .account-container {
+            position: relative;
+        }
+
+        .account-icon {
+            height: 45px;
+            width: auto;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .account-icon:hover {
+            transform: scale(1.05);
+        }
+
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            min-width: 150px;
+            display: none;
+            z-index: 1001;
+        }
+
+        .dropdown.active {
+            display: block;
+        }
+
+        .dropdown a {
+            display: block;
+            padding: 10px 15px;
+            color: #333;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: background 0.2s ease;
+        }
+
+        .dropdown a:hover {
+            background: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #1e90ff);
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+            z-index: 1001;
+            transition: width 0.3s ease-out;
+        }
+
+        .hero {
+            width: 100%;
+            height: calc(100vh - 80px);
+            padding: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .hero.loaded {
+            opacity: 1;
+        }
+
+        .hero iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: #333;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        /* Media Query for Mobile (≤600px) */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 100vw; /* Full width even when inactive */
+                height: calc(100vh - 60px); /* Below navbar */
+                top: 60px; /* Starts below navbar */
+                z-index: 999; /* Above main content, below navbar */
+                border-radius: 0; /* No rounded corners on full-width */
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+                width: 100vw; /* Full viewport width when active */
+                height: calc(100vh - 60px); /* Ensure it covers height below navbar */
+                z-index: 999; /* Above other content but below navbar */
+            }
+
+            .main-content {
+                margin-left: 0; /* No space reserved for sidebar */
+                padding-top: 60px;
+                width: 100vw; /* Full viewport width */
+                position: relative;
+                z-index: 1; /* Below sidebar when active */
+            }
+
+            .navbar {
+                width: 100vw; /* Full viewport width */
+                height: 60px;
+                padding: 0 15px;
+                justify-content: space-between;
+                left: 0;
+                z-index: 1000; /* Above sidebar */
+            }
+
+            .navbar-left {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                gap: 10px;
+            }
+
+            .logo {
+                height: 25px;
+            }
+
+            .brand-name {
+                font-size: 1.5rem;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .account-icon {
+                height: 35px;
+            }
+
+            .progress-bar {
+                top: 60px;
+            }
+
+            .hero {
+                height: calc(100vh - 60px);
+                width: 100vw; /* Full width */
+            }
+
+            .dropdown {
+                right: -10px;
+                min-width: 120px;
+            }
+
+            .overlay {
+                display: none;
+            }
+
+            body {
+                font-size: 14px;
+            }
+        }
+
+
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 160px;
+            }
+            .main-content {
+                margin-left: 0px;
+                width: calc(100% - 160px);
+            }
+            .navbar {
+                padding: 0 15px;
+            }
+            .brand-name {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body class="fsa-theme">
+    <div class="sidebar" role="navigation" aria-label="Main navigation">
+        <div class="sidebar-links">
+            <a href="#" data-content="agent_dashboard.html" class="active" aria-label="Dashboard">Dashboard</a>
+            <a href="#" data-content="agent_add_vendor.html" aria-label="Add Vendor">Add Vendor</a>
+            <a href="#" data-content="agent_tickets.html" aria-label="Tickets">Tickets</a>
+        </div>
+        <div class="powered-by">Powered by TSC Tools</div>
+    </div>
+
+    <div class="main-content">
+        <div class="overlay"></div>
+
+        <nav class="navbar" role="banner">
+            <div class="hamburger" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="navbar-left">
+                <img src="/static/squares.png" alt="Vendor's Bay Logo" class="logo">
+                <span class="brand-name">Vendor's Bay</span>
+            </div>
+            <div class="account-container">
+                <img src="/static/account.png" alt="Account Icon" class="account-icon" aria-label="Account menu">
+                <div class="dropdown" role="menu">
+                    <a href="#" role="menuitem">View Profile</a>
+                    <a href="login.html" role="menuitem">Logout</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="progress-bar" id="progressBar"></div>
+
+        <div class="hero" id="heroSection">
+            <iframe id="contentFrame" src="agent_dashboard.html" title="Dashboard Content"></iframe>
+        </div>
+    </div>
+
+    <script>
+        const accountIcon = document.querySelector('.account-icon');
+        const dropdown = document.querySelector('.dropdown');
+        const sidebarLinks = document.querySelectorAll('.sidebar a');
+        const progressBar = document.querySelector('#progressBar');
+        const contentFrame = document.querySelector('#contentFrame');
+        const heroSection = document.querySelector('#heroSection');
+        const hamburger = document.querySelector('.hamburger');
+        const sidebar = document.querySelector('.sidebar');
+
+        accountIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!accountIcon.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        hamburger.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 600 && sidebar.classList.contains('active') && 
+                !sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        function loadContent(url) {
+            heroSection.classList.remove('loaded');
+            progressBar.style.transition = 'none';
+            progressBar.style.width = '0';
+            progressBar.style.opacity = '1';
+            progressBar.style.display = 'block';
+
+            let progress = 0;
+            const increment = 5;
+            const speed = 50;
+            const progressInterval = setInterval(() => {
+                if (progress < 80) {
+                    progress += increment;
+                    progressBar.style.transition = 'width 0.3s ease-out';
+                    progressBar.style.width = `${progress}%`;
+                }
+            }, speed);
+
+            contentFrame.onload = () => {
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+                setTimeout(() => {
+                    progressBar.style.transition = 'opacity 0.3s ease-out';
+                    progressBar.style.opacity = '0';
+                    heroSection.classList.add('loaded');
+                    setTimeout(() => {
+                        progressBar.style.display = 'none';
+                    }, 300);
+                }, 300);
+            };
+
+            contentFrame.onerror = () => {
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+                contentFrame.contentDocument.body.innerHTML = `Error loading content: ${url}`;
+                setTimeout(() => {
+                    progressBar.style.opacity = '0';
+                    setTimeout(() => {
+                        progressBar.style.display = 'none';
+                    }, 300);
+                }, 300);
+            };
+
+            contentFrame.src = url;
+        }
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                sidebarLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                const contentUrl = this.getAttribute('data-content');
+                if (contentUrl) {
+                    loadContent(contentUrl);
+                } else {
+                    contentFrame.src = 'about:blank';
+                    progressBar.style.transition = 'none';
+                    progressBar.style.width = '0';
+                    progressBar.style.display = 'none';
+                }
+                if (window.innerWidth <= 600) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const activeLink = document.querySelector('.sidebar a.active');
+            if (activeLink && activeLink.getAttribute('data-content')) {
+                loadContent(activeLink.getAttribute('data-content'));
+            }
+        });
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 10) {
+                document.querySelector('.navbar').classList.add('sticky');
+            } else {
+                document.querySelector('.navbar').classList.remove('sticky');
+            }
+        });
+    </script>
+</body>
+</html>

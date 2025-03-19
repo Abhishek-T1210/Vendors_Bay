@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VendorSync Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scrollbar-width: thin;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f7fa;
+            color: #1e293b;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #64748b;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .header {
+            width: 100%;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+            margin-top: 80px; /* Offset for Agent.html navbar */
+        }
+        .header .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .content {
+            padding: 40px;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+        .dashboard-title {
+            font-size: 2.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 40px;
+            text-align: left;
+            letter-spacing: -0.025em;
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between text and icon */
+        }
+        .dashboard-title i {
+            font-size: 1.75rem; /* Adjust icon size */
+            color: #3b82f6; /* Match header gradient start color */
+        }
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+        .vendor-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .vendor-table thead {
+            background: #f8fafc;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        .vendor-table th {
+            padding: 16px 24px;
+            text-align: left;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .vendor-table th:nth-child(2),
+        .vendor-table th:nth-child(3),
+        .vendor-table th:nth-child(4) {
+            text-align: center;
+        }
+        .vendor-table td {
+            padding: 18px 24px;
+            font-size: 1rem;
+            color: #1e293b;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .vendor-table td:nth-child(2),
+        .vendor-table td:nth-child(3),
+        .vendor-table td:nth-child(4) {
+            text-align: center;
+        }
+        .vendor-table tr:nth-child(even) {
+            background: #f9fafb;
+        }
+        .vendor-table tr:hover {
+            background: #f1f5f9;
+            transition: background 0.2s ease;
+        }
+        .status {
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            justify-content: center;
+            width: 80%;
+        }
+        .status.pending {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        .status i {
+            font-size: 1rem;
+        }
+        .action-btn {
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.3s ease, transform 0.1s ease, box-shadow 0.2s ease;
+        }
+        .action-btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .action-btn:active {
+            transform: translateY(0);
+        }
+        .sap-label {
+            color: #64748b;
+            font-weight: 500;
+            margin-right: 8px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: #64748b;
+            transition: color 0.2s ease;
+        }
+        .modal-close:hover {
+            color: #3b82f6;
+        }
+        .modal h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+        .modal p {
+            font-size: 1rem;
+            color: #475569;
+            white-space: pre-line;
+        }
+        @media (max-width: 1024px) {
+            .content { padding: 24px; }
+            .vendor-table th, .vendor-table td { padding: 14px 20px; }
+        }
+        @media (max-width: 768px) {
+            .card {margin-bottom: 20px;}
+            .header { padding: 16px 24px; margin-top: 70px; }
+            .dashboard-title { margin-bottom: 20px; font-size: 1.4rem; gap: 14px; }
+            .content { padding: 16px; padding-top: 24px; }
+            .vendor-table { display: block; overflow-x: auto; scrollbar-width: thin; }
+            .vendor-table th, .vendor-table td { padding: 12px 22px; }
+            .dashboard-title i {
+            font-size: 1.4rem; /* Adjust icon size */
+            color: #3b82f6; /* Match header gradient start color */
+        }
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h2 class="dashboard-title">Task Follow-Up Dashboard <i class="fas fa-calendar-check"></i></h2>
+        <div class="card">
+            <table class="vendor-table" id="vendorTable">
+                <thead>
+                    <tr>
+                        <th>Vendor Name</th>
+                        <th>Process Initiated</th>
+                        <th>Form Submitted</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="vendorTableBody">
+                    <!-- Populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal" id="issueModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="document.getElementById('issueModal').style.display='none'">✕</button>
+            <h3>Issue Details</h3>
+            <p id="modalVendorName"></p>
+        </div>
+    </div>
+
+    <script>
+        function populateTable(vendors) {
+            const tbody = document.getElementById('vendorTableBody');
+            tbody.innerHTML = '';
+            vendors.forEach(vendor => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${vendor.name || 'Unnamed Vendor'}</td>
+                    <td>${vendor.process_initiated === 'true' || vendor.process_initiated === true ? '<i class="fas fa-check-circle" style="color: #059669;"></i>' : ''}</td>
+                    <td>${vendor.form_submitted === 'true' || vendor.form_submitted === true ? '<i class="fas fa-check-circle" style="color: #059669;"></i>' : ''}</td>
+                    <td class="status-cell"><span class="status pending"><i class="fas fa-clock"></i> Pending</span></td>
+                    <td class="action-cell"><span class="sap-label">Pending</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function loadFromLocalStorage() {
+            const vendors = JSON.parse(localStorage.getItem('vendors') || '[]');
+            populateTable(vendors);
+        }
+
+        function loadFromCSV(file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const csv = event.target.result;
+                const lines = csv.split('\n').filter(line => line.trim() !== '');
+                const headers = lines[0].split(',').map(header => header.trim());
+                const vendors = lines.slice(1).map(line => {
+                    const values = line.split(',').map(val => val.replace(/^"|"$/g, '')); // Remove quotes
+                    const vendor = {};
+                    headers.forEach((header, index) => {
+                        vendor[header] = values[index] || '';
+                    });
+                    return vendor;
+                });
+                localStorage.setItem('vendors', JSON.stringify(vendors)); // Update localStorage
+                populateTable(vendors);
+            };
+            reader.readAsText(file);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
+            const header = document.querySelector('.header');
+            header.innerHTML = `
+                <div class="logo">VendorSync</div>
+                <button class="action-btn" onclick="window.location.href='agent_add_vendor.html'"><i class="fas fa-plus"></i> Add Vendor</button>
+            `;
+            const fileInput = document.getElementById('loadVendors');
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    loadFromCSV(file);
+                }
+            });
+            setInterval(loadFromLocalStorage, 5000); // Auto-refresh every 5 seconds
+        });
+    </script>
+</body>
+</html>

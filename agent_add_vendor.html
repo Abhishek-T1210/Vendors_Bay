@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            background:#f4f7fa;
+            min-height: 100vh;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 2.75rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 40px;
+            width: 100%;
+            text-align: left;
+            letter-spacing: -0.03em;
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-container {
+            max-width: 1100px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 50px;
+            position: relative;
+            border: 1px solid #e2e8f0;
+            margin-top: 120px;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .form-header h2 {
+            font-size: 2.25rem;
+            color: #1e3a8a;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .form-indicator {
+            position: absolute;
+            top: -30px;
+            left: 50px;
+            width: 320px;
+            height: 60px;
+            background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            color: #fff;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-indicator:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-indicator .form-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .form-indicator .form-title .large-a {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-left: 6px;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-indicator .form-subtitle {
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: #dbeafe;
+            margin-left: 12px;
+            line-height: 1.3;
+            max-width: 65%;
+        }
+
+        .form-content {
+            display: none;
+            position: relative;
+            flex-direction: column;
+            gap: 50px;
+            padding-bottom: 80px;
+            padding-top: 60px;
+        }
+
+        .form-content.active {
+            display: flex;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .image-upload-container {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 160px;
+            height: 160px;
+            border: 2px dashed #64748b;
+            border-radius: 16%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .image-upload-container:hover {
+            border-color: #1e40af;
+            background: #f1f5f9;
+        }
+
+        .image-upload-container label {
+            font-size: 14px;
+            color: #1e40af;
+            cursor: pointer;
+            text-align: center;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .image-upload-container input[type="file"] {
+            display: none;
+        }
+
+        .image-upload-container.has-preview label {
+            background: rgba(0, 0, 0, 0.4);
+            color: #fff;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .image-upload-container.has-preview:hover label {
+            opacity: 1;
+        }
+
+        .image-upload-container.has-preview label::before {
+            content: "Replace";
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .upload-container {
+            width: 180px;
+            height: 180px;
+            border: 2px dashed #64748b;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .upload-container:hover {
+            border-color: #1e40af;
+            background: #f1f5f9;
+            transform: scale(1.02);
+        }
+
+        .upload-container label {
+            font-size: 15px;
+            color: #1e40af;
+            cursor: pointer;
+            text-align: center;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            z-index: 2;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .upload-container input[type="file"] {
+            display: none;
+        }
+
+        .upload-icon::before {
+            content: "☁️";
+            font-size: 40px;
+            color: #1e40af;
+        }
+
+        .upload-container.has-preview label {
+            background: rgba(0, 0, 0, 0.4);
+            color: #fff;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .upload-container.has-preview:hover label {
+            opacity: 1;
+        }
+
+        .upload-container.has-preview label::before {
+            content: "Replace";
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .upload-container.has-preview .upload-icon::before {
+            content: none;
+        }
+
+        .upload-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        .pdf-preview {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e40af;
+            word-wrap: break-word;
+            overflow: hidden;
+            z-index: 1;
+            cursor: pointer;
+        }
+
+        .form-fields {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 30px;
+            align-items: start;
+        }
+
+        .additional-documents .form-fields {
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .additional-documents .form-group {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .additional-documents .form-group:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .additional-documents .upload-container {
+            width: 140px;
+            height: 140px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .additional-documents .upload-container:hover {
+            border-color: #1e3a8a;
+            background: #f1f5f9;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 10px;
+            display: inline-block;
+            transition: color 0.2s ease;
+        }
+
+        label::after {
+            content: "*";
+            color: #dc2626;
+            font-size: 16px;
+            font-weight: 700;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        label.no-asterisk::after {
+            content: none;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px;
+            font-size: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: #ffffff;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #1e40af;
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.03);
+            background: #fff;
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .radio-group input[type="radio"] {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .declaration-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 20px 0;
+        }
+
+        .declaration-group input[type="checkbox"] {
+            margin-top: 4px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .declaration-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #0f172a;
+            line-height: 1.5;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: #fff;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn:not(:disabled):hover {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            box-shadow: 0 5px 15px rgba(30, 64, 175, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-container {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            color: #475569;
+        }
+
+        .mandatory-message::before {
+            content: "* ";
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .validation-error {
+            color: #dc2626;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            h1 { display: flex; gap: 14px; font-size: 1.4rem; left: 16px; top: 30px; font-weight:600; }
+            .image-upload-container label{height: 0px;}
+            .form-container {border: none; border-radius: 10px; padding: 20px; margin-top: 65px; }
+            .form-indicator { 
+                width: 220px; 
+                height: 50px; 
+                padding: 0 12px; 
+                left: 30px;
+                top: -25px;
+            }
+            .lable {font-size: 12px; margin-bottom: 4px;}
+            .form-indicator .form-title { font-size: 1.25rem; }
+            .form-indicator .form-title .large-a { font-size: 1.75rem; margin-left: 4px; }
+            .form-indicator .form-subtitle { font-size: 0.6875rem; margin-left: 8px; }
+            .form-fields { grid-template-columns: 1fr; gap: 0px; }
+            .additional-documents .form-fields { grid-template-columns: 1fr; padding: 15px; }
+            .form-header h2 { font-size: 1.2rem; }
+            .btn-container { bottom: 10px; right: 15px; flex-direction: column; gap: 10px; }
+            .image-upload-container { width: 140px; height: 140px; margin: 0 auto; }
+            .upload-container { width: 150px; height: 150px; }
+            .additional-documents .upload-container { width: 120px; height: 120px; }
+            .declaration-group { flex-direction: column; gap: 10px; }
+            .pdf-preview { font-size: 12px; padding: 15px; }
+            .form-content { padding-top: 0px; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+</head>
+<body>
+    <h1>Agent Onboarding Forms<i style="color: blue;" class="fas fa-file-alt"></i></h1>
+
+    <div class="form-container">
+        <div class="form-header">
+            <h2>COMFORT GRID TECHNOLOGIES PVT LTD.</h2>
+        </div>
+
+        <form id="vendor-form" method="POST" enctype="multipart/form-data">
+            <!-- Form A -->
+            <div class="form-content active" id="form-a">
+                <div class="image-upload-container">
+                    <label for="profile-image" class="no-asterisk">
+                        <span class="upload-icon"></span>
+                        Upload Photo
+                    </label>
+                    <input type="file" id="profile-image" name="profile-image" accept="image/*">
+                    <img class="upload-preview" id="image-preview" src="#" alt="Profile Preview">
+                </div>
+                <div class="form-fields" style="margin-top: 180px;">
+                    <div class="form-group">
+                        <label for="name">Company Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="chief-executive">Architect Name</label>
+                        <input type="text" id="chief-executive" name="chief-executive" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="company-category">Company Category</label>
+                        <input type="text" id="company-category" name="company-category" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gst-number">GST Number</label>
+                        <input type="text" id="gst-number" name="gst-number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="relationship-manager">Relationship Manager</label>
+                        <input type="text" id="relationship-manager" name="relationship-manager" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email-id">Email ID</label>
+                        <input type="email" id="email-id" name="email-id" required>
+                        <span class="validation-error" id="email-error">Invalid Email</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile">Mobile Number</label>
+                        <input type="tel" id="mobile" name="mobile" required maxlength="10">
+                        <span class="validation-error" id="mobile-error">Must be exactly a 10 digit number</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="landline" class="no-asterisk">Landline</label>
+                        <input type="tel" id="landline" name="landline">
+                        <span class="validation-error" id="landline-error">Only numbers allowed</span>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="address">Address</label>
+                        <textarea id="address" name="address" required></textarea>
+                    </div>
+                </div>
+                <div class="btn-container">
+                    <button type="button" class="btn" id="next-a" disabled>Next Form</button>
+                </div>
+            </div>
+
+            <!-- Form B -->
+            <div class="form-content" id="form-b">
+                <div class="section">
+                    <div class="section-title">Commercial Details</div>
+                    <div class="form-fields">
+                        <div class="form-group">
+                            <label for="gst-number-b">GST Number</label>
+                            <input type="text" id="gst-number-b" name="gst-number-b" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cin-number">CIN Number</label>
+                            <input type="text" id="cin-number" name="cin-number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gst-certificate">GST Certificate</label>
+                            <div class="upload-container">
+                                <label for="gst-certificate">
+                                    <span class="upload-icon"></span>
+                                    Upload File
+                                </label>
+                                <input type="file" id="gst-certificate" name="gst-certificate" accept="image/*,.pdf" required>
+                                <img class="upload-preview" id="gst-preview" src="#" alt="GST Preview">
+                                <div class="pdf-preview" id="gst-pdf-preview"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">PAN Details</div>
+                    <div class="form-fields">
+                        <div class="form-group">
+                            <label for="pan-photo">PAN Card</label>
+                            <div class="upload-container">
+                                <label for="pan-photo">
+                                    <span class="upload-icon"></span>
+                                    Upload File
+                                </label>
+                                <input type="file" id="pan-photo" name="pan-photo" accept="image/*,.pdf" required>
+                                <img class="upload-preview" id="pan-preview" src="#" alt="PAN Preview">
+                                <div class="pdf-preview" id="pan-pdf-preview"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="pan-name">Name as per PAN</label>
+                            <input type="text" id="pan-name" name="pan-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pan-number">PAN Number</label>
+                            <input type="text" id="pan-number" name="pan-number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tan-number">TAN Number</label>
+                            <input type="text" id="tan-number" name="tan-number" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">Aadhar Details</div>
+                    <div class="form-fields">
+                        <div class="form-group">
+                            <label for="aadhar-front">Aadhar Card Front</label>
+                            <div class="upload-container">
+                                <label for="aadhar-front">
+                                    <span class="upload-icon"></span>
+                                    Upload Front
+                                </label>
+                                <input type="file" id="aadhar-front" name="aadhar-front" accept="image/*,.pdf" required>
+                                <img class="upload-preview" id="aadhar-front-preview" src="#" alt="Aadhar Front Preview">
+                                <div class="pdf-preview" id="aadhar-front-pdf-preview"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="aadhar-back">Aadhar Card Back</label>
+                            <div class="upload-container">
+                                <label for="aadhar-back">
+                                    <span class="upload-icon"></span>
+                                    Upload Back
+                                </label>
+                                <input type="file" id="aadhar-back" name="aadhar-back" accept="image/*,.pdf" required>
+                                <img class="upload-preview" id="aadhar-back-preview" src="#" alt="Aadhar Back Preview">
+                                <div class="pdf-preview" id="aadhar-back-pdf-preview"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="aadhar-number">Aadhar Number</label>
+                            <input type="text" id="aadhar-number" name="aadhar-number" required maxlength="12">
+                            <span class="validation-error" id="aadhar-error">Must be exactly 12 digits</span>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="aadhar-address">Address as per Aadhar</label>
+                            <textarea id="aadhar-address" name="aadhar-address" required></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">E-Invoice Applicability (Yes / No)</div>
+                    <div class="form-fields">
+                        <div class="form-group">
+                            <div class="radio-group">
+                                <label class="no-asterisk"><input type="radio" name="e-invoice" value="yes" required> Yes</label>
+                                <label class="no-asterisk"><input type="radio" name="e-invoice" value="no"> No</label>
+                            </div>
+                        </div>
+                        <div class="form-group" id="e-invoice-upload" style="display: none;">
+                            <label for="e-invoice-image" class="no-asterisk">E-Invoice</label>
+                            <div class="upload-container">
+                                <label for="e-invoice-image">
+                                    <span class="upload-icon"></span>
+                                    Upload File
+                                </label>
+                                <input type="file" id="e-invoice-image" name="e-invoice-image" accept="image/*,.pdf">
+                                <img class="upload-preview" id="e-invoice-preview" src="#" alt="E-Invoice Preview">
+                                <div class="pdf-preview" id="e-invoice-pdf-preview"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">Products Manufactured / Service Provided</div>
+                    <div class="form-fields">
+                        <div class="form-group full-width">
+                            <label for="years-served">No. of Years Served to Comfort Grid</label>
+                            <textarea id="years-served" name="years-served" required></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="materials-products">Materials / Products / Service</label>
+                            <textarea id="materials-products" name="materials-products" required></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="lead-time">Lead Time Required for Effecting Supply</label>
+                            <textarea id="lead-time" name="lead-time" required></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="section additional-documents">
+                    <div class="section-title">Additional Document Uploads</div>
+                    <div class="form-fields">
+                        <div class="form-group">
+                            <label for="msme-certificate" class="no-asterisk">MSME Certificate</label>
+                            <div class="upload-container">
+                                <label for="msme-certificate">
+                                    <span class="upload-icon"></span>
+                                    Upload File
+                                </label>
+                                <input type="file" id="msme-certificate" name="msme-certificate" accept="image/*,.pdf">
+                                <img class="upload-preview" id="msme-preview" src="#" alt="MSME Preview">
+                                <div class="pdf-preview" id="msme-pdf-preview"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="undertaking-letter" class="no-asterisk">Undertaking (Non-MSME)</label>
+                            <div class="upload-container">
+                                <label for="undertaking-letter">
+                                    <span class="upload-icon"></span>
+                                    Upload File
+                                </label>
+                                <input type="file" id="undertaking-letter" name="undertaking-letter" accept="image/*,.pdf">
+                                <img class="upload-preview" id="undertaking-preview" src="#" alt="Undertaking Preview">
+                                <div class="pdf-preview" id="undertaking-pdf-preview"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="tan-certificate" class="no-asterisk">TAN Certificate</label>
+                            <div class="upload-container">
+                                <label for="tan-certificate">
+                                    <span class="upload-icon"></span>
+                                    Upload File
+                                </label>
+                                <input type="file" id="tan-certificate" name="tan-certificate" accept="image/*,.pdf">
+                                <img class="upload-preview" id="tan-preview" src="#" alt="TAN Preview">
+                                <div class="pdf-preview" id="tan-pdf-preview"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="shop-license" class="no-asterisk">Shop & Est. License</label>
+                            <div class="upload-container">
+                                <label for="shop-license">
+                                    <span class="upload-icon"></span>
+                                    Upload File
+                                </label>
+                                <input type="file" id="shop-license" name="shop-license" accept="image/*,.pdf">
+                                <img class="upload-preview" id="shop-preview" src="#" alt="Shop License Preview">
+                                <div class="pdf-preview" id="shop-pdf-preview"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-container">
+                    <button type="button" class="btn" id="prev-b">Previous</button>
+                    <button type="button" class="btn" id="next-b" disabled>Next Form</button>
+                </div>
+            </div>
+
+            <!-- Form C -->
+            <div class="form-content" id="form-c">
+                <div class="section">
+                    <div class="section-title">Bank Details</div>
+                    <div class="form-fields">
+                        <div class="form-group">
+                            <label for="account-name">Account Name</label>
+                            <input type="text" id="account-name" name="account-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="account-number">Account Number</label>
+                            <input type="text" id="account-number" name="account-number" required>
+                            <span class="validation-error" id="account-error">Only numbers allowed</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="ifsc-code">IFSC Code</label>
+                            <input type="text" id="ifsc-code" name="ifsc-code" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bank-name">Bank Name</label>
+                            <input type="text" id="bank-name" name="bank-name" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="bank-address" class="no-asterisk">Bank Address</label>
+                            <textarea id="bank-address" name="bank-address"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="payment-terms" class="no-asterisk">Payment Terms</label>
+                            <input type="text" id="payment-terms" name="payment-terms">
+                        </div>
+                        <div class="form-group">
+                            <label for="cancelled-cheque" class="no-asterisk">Scan of Cancelled Cheque</label>
+                            <div class="upload-container">
+                                <label for="cancelled-cheque">
+                                    <span class="upload-icon"></span>
+                                    Upload File
+                                </label>
+                                <input type="file" id="cancelled-cheque" name="cancelled-cheque" accept="image/*,.pdf">
+                                <img class="upload-preview" id="cheque-preview" src="#" alt="Cheque Preview">
+                                <div class="pdf-preview" id="cheque-pdf-preview"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">Declaration</div>
+                    <div class="form-fields">
+                        <div class="form-group full-width">
+                            <div class="declaration-group">
+                                <input type="checkbox" id="declaration" name="declaration" required>
+                                <label for="declaration" class="no-asterisk">I / We hereby declare that all statements made in this application form for enlistment of Vendor are true, complete and correct to the best of my / our knowledge. In the event of any information being found false or incorrect, the enlistment and any Purchase Orders placed on our firm may be cancelled.</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-container">
+                    <button type="button" class="btn" id="prev-c">Previous</button>
+                    <button type="button" class="btn" id="submit-btn" disabled>Submit</button>
+                </div>
+            </div>
+
+            <span id="file-error" class="error-message">Files must be less than 2MB.</span>
+        </form>
+    </div>
+
+    <footer>
+        <span class="mandatory-message">Dear Agent, please ensure all mandatory fields are completed accurately to prevent delays or rejections.</span>
+    </footer>
+
+    <script>
+        const forms = {
+            'form-a': document.getElementById('form-a'),
+            'form-b': document.getElementById('form-b'),
+            'form-c': document.getElementById('form-c')
+        };
+        let currentForm = 'form-a';
+
+        function showForm(formId) {
+            Object.values(forms).forEach(form => {
+                form.classList.remove('active');
+            });
+            forms[formId].classList.add('active');
+            currentForm = formId;
+        }
+
+        // Function to Update Vendor Data in localStorage
+        function updateVendorData(data, isFullSubmission = false) {
+            let vendors = JSON.parse(localStorage.getItem('vendors') || '[]');
+            const existingVendorIndex = vendors.findIndex(v => v.name === data.name);
+
+            const vendorData = {
+                name: data.name,
+                process_initiated: true,
+                form_submitted: isFullSubmission,
+                status: 'Pending',
+                ...(isFullSubmission ? data : {})
+            };
+
+            if (existingVendorIndex !== -1) {
+                vendors[existingVendorIndex] = { ...vendors[existingVendorIndex], ...vendorData };
+            } else {
+                vendors.push(vendorData);
+            }
+
+            localStorage.setItem('vendors', JSON.stringify(vendors));
+        }
+
+        // Function to generate and download formatted Excel file using ExcelJS
+        async function generateExcelFile(formData) {
+            try {
+                const workbook = new ExcelJS.Workbook();
+                const worksheet = workbook.addWorksheet('Vendor Details', {
+                    properties: { defaultRowHeight: 20 }
+                });
+
+                // Styling constants
+                const headerStyle = {
+                    font: { bold: true, size: 12, color: { argb: 'FFFFFFFF' } },
+                    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A8A' } },
+                    alignment: { vertical: 'middle', horizontal: 'center' },
+                    border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+                };
+                const labelStyle = {
+                    font: { bold: true, size: 11 },
+                    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF8FAFC' } },
+                    border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+                };
+                const valueStyle = {
+                    font: { size: 11 },
+                    border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } },
+                    alignment: { wrapText: true }
+                };
+
+                let rowIndex = 1;
+
+                // Title
+                worksheet.mergeCells(`A${rowIndex}:D${rowIndex}`);
+                worksheet.getCell(`A${rowIndex}`).value = 'Vendor Onboarding Form';
+                worksheet.getCell(`A${rowIndex}`).style = headerStyle;
+                worksheet.getRow(rowIndex).height = 30;
+                rowIndex += 2;
+
+                // Form A Section
+                worksheet.mergeCells(`A${rowIndex}:D${rowIndex}`);
+                worksheet.getCell(`A${rowIndex}`).value = 'Form A - Basic Details';
+                worksheet.getCell(`A${rowIndex}`).style = headerStyle;
+                rowIndex++;
+
+                const formAData = [
+                    ["Company Name", formData["name"]],
+                    ["Architect Name", formData["chief-executive"]],
+                    ["Company Category", formData["company-category"]],
+                    ["GST Number", formData["gst-number"]],
+                    ["Relationship Manager", formData["relationship-manager"]],
+                    ["Email ID", formData["email-id"]],
+                    ["Mobile Number", formData["mobile"]],
+                    ["Landline", formData["landline"]],
+                    ["Address", formData["address"]]
+                ];
+
+                formAData.forEach(([label, value]) => {
+                    worksheet.getCell(`A${rowIndex}`).value = label;
+                    worksheet.getCell(`A${rowIndex}`).style = labelStyle;
+                    worksheet.getCell(`B${rowIndex}`).value = value;
+                    worksheet.getCell(`B${rowIndex}`).style = valueStyle;
+                    worksheet.mergeCells(`B${rowIndex}:D${rowIndex}`);
+                    rowIndex++;
+                });
+
+                const profileImageInput = document.getElementById('profile-image');
+                if (profileImageInput.files[0] && profileImageInput.files[0].type.startsWith('image/')) {
+                    const file = profileImageInput.files[0];
+                    const base64 = await new Promise(resolve => {
+                        const reader = new FileReader();
+                        reader.onload = e => resolve(e.target.result);
+                        reader.readAsDataURL(file);
+                    });
+                    const imageId = workbook.addImage({ base64, extension: 'png' });
+                    worksheet.addImage(imageId, { tl: { col: 1, row: rowIndex - 1 }, br: { col: 2, row: rowIndex + 2 } });
+                    worksheet.getCell(`A${rowIndex}`).value = 'Profile Image';
+                    worksheet.getCell(`A${rowIndex}`).style = labelStyle;
+                    rowIndex += 3;
+                }
+                rowIndex++;
+
+                // Form B Section
+                worksheet.mergeCells(`A${rowIndex}:D${rowIndex}`);
+                worksheet.getCell(`A${rowIndex}`).value = 'Form B - Commercial & Additional Details';
+                worksheet.getCell(`A${rowIndex}`).style = headerStyle;
+                rowIndex++;
+
+                const imageFieldsB = [
+                    'gst-certificate', 'pan-photo', 'aadhar-front', 'aadhar-back', 'e-invoice-image',
+                    'msme-certificate', 'undertaking-letter', 'tan-certificate', 'shop-license'
+                ];
+                const fileNamesB = {};
+                const imagePromises = [];
+
+                for (const field of imageFieldsB) {
+                    const input = document.getElementById(field);
+                    if (input.files[0]) {
+                        const file = input.files[0];
+                        fileNamesB[field] = file.name;
+                        if (file.type.startsWith('image/')) {
+                            imagePromises.push(new Promise(resolve => {
+                                const reader = new FileReader();
+                                reader.onload = e => resolve({ field, base64: e.target.result });
+                                reader.readAsDataURL(file);
+                            }));
+                        }
+                    } else {
+                        fileNamesB[field] = "";
+                    }
+                }
+
+                const formBData = [
+                    ["GST Number (B)", formData["gst-number-b"]],
+                    ["CIN Number", formData["cin-number"]],
+                    ["GST Certificate", fileNamesB['gst-certificate']],
+                    ["Name as per PAN", formData["pan-name"]],
+                    ["PAN Number", formData["pan-number"]],
+                    ["TAN Number", formData["tan-number"]],
+                    ["PAN Photo", fileNamesB['pan-photo']],
+                    ["Aadhar Number", formData["aadhar-number"]],
+                    ["Address as per Aadhar", formData["aadhar-address"]],
+                    ["Aadhar Front", fileNamesB['aadhar-front']],
+                    ["Aadhar Back", fileNamesB['aadhar-back']],
+                    ["No. of Years Served", formData["years-served"]],
+                    ["Materials/Products/Service", formData["materials-products"]],
+                    ["Lead Time", formData["lead-time"]],
+                    ["E-Invoice Applicability", formData["e-invoice"]],
+                    ["E-Invoice Image", fileNamesB['e-invoice-image']],
+                    ["MSME Certificate", fileNamesB['msme-certificate']],
+                    ["Undertaking Letter", fileNamesB['undertaking-letter']],
+                    ["TAN Certificate", fileNamesB['tan-certificate']],
+                    ["Shop License", fileNamesB['shop-license']]
+                ];
+
+                formBData.forEach(([label, value]) => {
+                    worksheet.getCell(`A${rowIndex}`).value = label;
+                    worksheet.getCell(`A${rowIndex}`).style = labelStyle;
+                    worksheet.getCell(`B${rowIndex}`).value = value;
+                    worksheet.getCell(`B${rowIndex}`).style = valueStyle;
+                    worksheet.mergeCells(`B${rowIndex}:D${rowIndex}`);
+                    rowIndex++;
+                });
+
+                const imagesB = await Promise.all(imagePromises);
+                imagesB.forEach((img, index) => {
+                    const imageId = workbook.addImage({ base64: img.base64, extension: 'png' });
+                    worksheet.addImage(imageId, { tl: { col: 1, row: rowIndex - 1 }, br: { col: 2, row: rowIndex + 2 } });
+                    worksheet.getCell(`A${rowIndex}`).value = `${img.field.replace('-', ' ').toUpperCase()}`;
+                    worksheet.getCell(`A${rowIndex}`).style = labelStyle;
+                    rowIndex += 3;
+                });
+                rowIndex++;
+
+                // Form C Section
+                worksheet.mergeCells(`A${rowIndex}:D${rowIndex}`);
+                worksheet.getCell(`A${rowIndex}`).value = 'Form C - Bank Details & Declaration';
+                worksheet.getCell(`A${rowIndex}`).style = headerStyle;
+                rowIndex++;
+
+                const chequeInput = document.getElementById('cancelled-cheque');
+                let chequeName = "";
+                let chequeBase64 = null;
+                if (chequeInput.files[0]) {
+                    chequeName = chequeInput.files[0].name;
+                    if (chequeInput.files[0].type.startsWith('image/')) {
+                        chequeBase64 = await new Promise(resolve => {
+                            const reader = new FileReader();
+                            reader.onload = e => resolve(e.target.result);
+                            reader.readAsDataURL(chequeInput.files[0]);
+                        });
+                    }
+                }
+
+                const formCData = [
+                    ["Account Name", formData["account-name"]],
+                    ["Account Number", formData["account-number"]],
+                    ["IFSC Code", formData["ifsc-code"]],
+                    ["Bank Name", formData["bank-name"]],
+                    ["Bank Address", formData["bank-address"]],
+                    ["Payment Terms", formData["payment-terms"]],
+                    ["Cancelled Cheque", chequeName],
+                    ["Declaration", formData["declaration"]]
+                ];
+
+                formCData.forEach(([label, value]) => {
+                    worksheet.getCell(`A${rowIndex}`).value = label;
+                    worksheet.getCell(`A${rowIndex}`).style = labelStyle;
+                    worksheet.getCell(`B${rowIndex}`).value = value;
+                    worksheet.getCell(`B${rowIndex}`).style = valueStyle;
+                    worksheet.mergeCells(`B${rowIndex}:D${rowIndex}`);
+                    rowIndex++;
+                });
+
+                if (chequeBase64) {
+                    const imageId = workbook.addImage({ base64: chequeBase64, extension: 'png' });
+                    worksheet.addImage(imageId, { tl: { col: 1, row: rowIndex - 1 }, br: { col: 2, row: rowIndex + 2 } });
+                    worksheet.getCell(`A${rowIndex}`).value = 'Cancelled Cheque Image';
+                    worksheet.getCell(`A${rowIndex}`).style = labelStyle;
+                    rowIndex += 3;
+                }
+
+                // Column widths
+                worksheet.getColumn('A').width = 30;
+                worksheet.getColumn('B').width = 40;
+                worksheet.getColumn('C').width = 10;
+                worksheet.getColumn('D').width = 10;
+
+                // Download the file
+                const buffer = await workbook.xlsx.writeBuffer();
+                const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${formData["name"].replace(/[^a-zA-Z0-9]/g, '_')}.xlsx`;
+                link.click();
+            } catch (error) {
+                console.error('Error generating Excel file:', error);
+                alert('Failed to generate Excel file. Please check the console for details.');
+            }
+        }
+
+        // Mandatory Fields
+        const mandatoryFieldsA = [
+            'name', 'chief-executive', 'company-category', 
+            'gst-number', 'relationship-manager', 'email-id', 
+            'mobile', 'address'
+        ].map(id => document.getElementById(id));
+
+        const mandatoryFieldsB = [
+            'gst-number-b', 'cin-number', 'gst-certificate', 'pan-photo', 
+            'pan-name', 'pan-number', 'tan-number', 'aadhar-front', 
+            'aadhar-back', 'aadhar-number', 'aadhar-address', 'years-served', 
+            'materials-products', 'lead-time'
+        ].map(id => document.getElementById(id));
+
+        const mandatoryFieldsC = [
+            'account-name', 'account-number', 'ifsc-code', 'bank-name', 'declaration'
+        ].map(id => document.getElementById(id));
+
+        const radioButtonsB = document.querySelectorAll('input[name="e-invoice"]');
+
+        // Buttons
+        const nextA = document.getElementById('next-a');
+        const prevB = document.getElementById('prev-b');
+        const nextB = document.getElementById('next-b');
+        const prevC = document.getElementById('prev-c');
+        const submitBtn = document.getElementById('submit-btn');
+
+        // Validation Functions
+        function validateEmail(email) {
+            return email.includes('@');
+        }
+
+        function validateMobile(mobile) {
+            return /^\d{10}$/.test(mobile);
+        }
+
+        function validateAadhar(aadhar) {
+            return /^\d{12}$/.test(aadhar);
+        }
+
+        function validateNumbersOnly(value) {
+            return /^\d*$/.test(value);
+        }
+
+        // Check Mandatory Fields with Validation
+        function checkFormValidity(fields, radio = null) {
+            let allValid = true;
+
+            fields.forEach(field => {
+                const value = field.value.trim();
+                if (field.type === 'file') {
+                    if (field.files.length === 0) {
+                        allValid = false;
+                    }
+                } else if (field.type === 'checkbox') {
+                    if (!field.checked) allValid = false;
+                } else if (value === '') {
+                    allValid = false;
+                } else if (field.id === 'email-id' && !validateEmail(value)) {
+                    document.getElementById('email-error').style.display = 'block';
+                    allValid = false;
+                } else if (field.id === 'mobile' && !validateMobile(value)) {
+                    document.getElementById('mobile-error').style.display = 'block';
+                    allValid = false;
+                } else if (field.id === 'landline' && value && !validateNumbersOnly(value)) {
+                    document.getElementById('landline-error').style.display = 'block';
+                    allValid = false;
+                } else if (field.id === 'aadhar-number' && !validateAadhar(value)) {
+                    document.getElementById('aadhar-error').style.display = 'block';
+                    allValid = false;
+                } else if (field.id === 'account-number' && !validateNumbersOnly(value)) {
+                    document.getElementById('account-error').style.display = 'block';
+                    allValid = false;
+                } else {
+                    const errorElement = document.getElementById(`${field.id}-error`);
+                    if (errorElement) errorElement.style.display = 'none';
+                }
+            });
+
+            const radioSelected = radio ? Array.from(radio).some(r => r.checked) : true;
+            return allValid && radioSelected;
+        }
+
+        function updateButtonStates() {
+            nextA.disabled = !checkFormValidity(mandatoryFieldsA);
+            nextB.disabled = !checkFormValidity(mandatoryFieldsB, radioButtonsB);
+            submitBtn.disabled = !checkFormValidity(mandatoryFieldsC);
+        }
+
+        // Event Listeners for Form Navigation and Submission
+        nextA.addEventListener('click', () => {
+            if (checkFormValidity(mandatoryFieldsA)) {
+                const formData = { name: document.getElementById('name').value };
+                updateVendorData(formData);
+                showForm('form-b');
+            }
+        });
+
+        prevB.addEventListener('click', () => showForm('form-a'));
+
+        nextB.addEventListener('click', () => {
+            if (checkFormValidity(mandatoryFieldsB, radioButtonsB)) showForm('form-c');
+        });
+
+        prevC.addEventListener('click', () => showForm('form-b'));
+
+        submitBtn.addEventListener('click', async () => {
+            if (checkFormValidity(mandatoryFieldsC)) {
+                console.log('Form C validation passed, proceeding with submission...');
+                const formData = {};
+                [...mandatoryFieldsA, ...mandatoryFieldsB, ...mandatoryFieldsC].forEach(field => {
+                    if (field.type === 'checkbox') {
+                        formData[field.id] = field.checked ? 'true' : 'false';
+                    } else if (field.type !== 'file') {
+                        formData[field.id] = field.value;
+                    }
+                });
+                ['landline', 'bank-address', 'payment-terms'].forEach(id => {
+                    const field = document.getElementById(id);
+                    if (field.value.trim()) formData[id] = field.value;
+                });
+                radioButtonsB.forEach(radio => {
+                    if (radio.checked) formData['e-invoice'] = radio.value;
+                });
+
+                try {
+                    console.log('Updating vendor data...');
+                    updateVendorData(formData, true);
+                    console.log('Generating Excel file...');
+                    await generateExcelFile(formData);
+                    console.log('Excel file generated, resetting form...');
+                    document.getElementById('vendor-form').reset();
+                    showForm('form-a');
+                    updateButtonStates();
+                    console.log('Redirecting to dashboard...');
+                    window.location.href = 'agent_dashboard.html';
+                } catch (error) {
+                    console.error('Submission error:', error);
+                    alert('An error occurred during submission. Please check the console for details.');
+                }
+            } else {
+                console.log('Form C validation failed. Check mandatory fields.');
+                alert('Please fill all mandatory fields correctly.');
+            }
+        });
+
+        // Input Event Listeners
+        mandatoryFieldsA.forEach(field => field.addEventListener('input', updateButtonStates));
+        mandatoryFieldsB.forEach(field => field.addEventListener('input', updateButtonStates));
+        mandatoryFieldsC.forEach(field => field.addEventListener('input', updateButtonStates));
+        radioButtonsB.forEach(radio => radio.addEventListener('change', updateButtonStates));
+
+        // Optional Profile Image Listener
+        document.getElementById('profile-image').addEventListener('change', updateButtonStates);
+
+        // Restrict Input to Numbers Only
+        ['mobile', 'landline', 'aadhar-number', 'account-number'].forEach(id => {
+            const input = document.getElementById(id);
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '');
+                if (id === 'mobile') this.value = this.value.slice(0, 10);
+                if (id === 'aadhar-number') this.value = this.value.slice(0, 12);
+            });
+        });
+
+        // File Upload Handling
+        const uploadInputs = [
+            { input: 'profile-image', preview: 'image-preview', pdfPreview: null },
+            { input: 'gst-certificate', preview: 'gst-preview', pdfPreview: 'gst-pdf-preview' },
+            { input: 'pan-photo', preview: 'pan-preview', pdfPreview: 'pan-pdf-preview' },
+            { input: 'aadhar-front', preview: 'aadhar-front-preview', pdfPreview: 'aadhar-front-pdf-preview' },
+            { input: 'aadhar-back', preview: 'aadhar-back-preview', pdfPreview: 'aadhar-back-pdf-preview' },
+            { input: 'e-invoice-image', preview: 'e-invoice-preview', pdfPreview: 'e-invoice-pdf-preview' },
+            { input: 'msme-certificate', preview: 'msme-preview', pdfPreview: 'msme-pdf-preview' },
+            { input: 'undertaking-letter', preview: 'undertaking-preview', pdfPreview: 'undertaking-pdf-preview' },
+            { input: 'tan-certificate', preview: 'tan-preview', pdfPreview: 'tan-pdf-preview' },
+            { input: 'shop-license', preview: 'shop-preview', pdfPreview: 'shop-pdf-preview' },
+            { input: 'cancelled-cheque', preview: 'cheque-preview', pdfPreview: 'cheque-pdf-preview' }
+        ];
+
+        uploadInputs.forEach(({ input, preview, pdfPreview }) => {
+            const inputElement = document.getElementById(input);
+            const previewElement = document.getElementById(preview);
+            const pdfPreviewElement = pdfPreview ? document.getElementById(pdfPreview) : null;
+            const containerElement = inputElement.closest('.upload-container, .image-upload-container');
+            const errorElement = document.getElementById('file-error');
+
+            inputElement.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    if (file.size > 2 * 1024 * 1024) {
+                        errorElement.style.display = 'block';
+                        previewElement.style.display = 'none';
+                        if (pdfPreviewElement) pdfPreviewElement.style.display = 'none';
+                        containerElement.classList.remove('has-preview');
+                        this.value = '';
+                    } else {
+                        errorElement.style.display = 'none';
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                previewElement.src = e.target.result;
+                                previewElement.style.display = 'block';
+                                if (pdfPreviewElement) pdfPreviewElement.style.display = 'none';
+                                containerElement.classList.add('has-preview');
+                            };
+                            reader.readAsDataURL(file);
+                        } else if (file.type === 'application/pdf' && pdfPreviewElement) {
+                            previewElement.style.display = 'none';
+                            pdfPreviewElement.textContent = file.name;
+                            pdfPreviewElement.style.display = 'flex';
+                            pdfPreviewElement.style.alignItems = 'center';
+                            pdfPreviewElement.style.justifyContent = 'center';
+                            containerElement.classList.add('has-preview');
+                        }
+                    }
+                    updateButtonStates();
+                }
+            });
+
+            previewElement.addEventListener('click', () => inputElement.click());
+            if (pdfPreviewElement) pdfPreviewElement.addEventListener('click', () => inputElement.click());
+        });
+
+        // E-Invoice Toggle
+        const eInvoiceUpload = document.getElementById('e-invoice-upload');
+        radioButtonsB.forEach(radio => {
+            radio.addEventListener('change', function() {
+                eInvoiceUpload.style.display = this.value === 'yes' ? 'block' : 'none';
+            });
+        });
+
+        // Initial State
+        updateButtonStates();
+        showForm('form-a');
+    </script>
+</body>
+</html>
