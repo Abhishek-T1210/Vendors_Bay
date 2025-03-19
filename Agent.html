@@ -6,6 +6,8 @@
     <title>Vendor's Bay - TSC Tools</title>
     <link rel="icon" type="image/png" href="/static/squares.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
         * {
             margin: 0;
@@ -78,13 +80,16 @@
         .sidebar a:last-child {
             border-bottom: none;
         }
-
+        
         .sidebar a::before {
-            content: '▶';
-            margin-right: 10px;
-            font-size: 0.9rem;
-            opacity: 0.7;
-        }
+    content: '\f054'; /* FontAwesome right arrow */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 10px;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
 
         .sidebar .powered-by {
             padding: 20px 35px;
