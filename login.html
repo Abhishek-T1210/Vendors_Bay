@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor's Bay - TSC Tools</title>
+    <link rel="icon" type="image/png" href="/static/squares.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+    min-height: 800px;
+    height: 100%;
+    background: url(/static/back.jpg) no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+        position: relative;
+       }
+        
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(6px);
+            z-index: -1;
+        }
+
+        .navbar {
+            width: 100%;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            gap: 16px;
+        }
+
+        .navbar.sticky {
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            height: 40px;
+            width: auto;
+            filter: brightness(0);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .brand-name {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .login-as-text {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .toggle-container {
+            position: relative;
+            width: 520px;
+            height: 80px;
+            background: #e9ecef;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .toggle-option {
+            width: 50%;
+            text-align: center;
+            cursor: pointer;
+            z-index: 2;
+            transition: color 0.6s ease;
+        }
+
+        .slider {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: calc(50% - 12px);
+            height: calc(100% - 12px);
+            background: #28a745;
+            border-radius: 34px;
+            transition: transform 0.6s ease-in-out, background 0.6s ease-in-out;
+            z-index: 1;
+        }
+
+        .toggle-option.active {
+            color: white;
+        }
+
+        .toggle-option:not(.active) {
+            color: #333;
+        }
+
+        .slider.admin {
+            transform: translateX(100%);
+            background: #dc3545;
+        }
+
+        .login-container {
+            background: rgb(255 255 255 / 0%);
+            padding: 60px 80px;
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            width: 70%;
+            max-width: 650px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            border: none;
+            backdrop-filter: blur(100px);
+            overflow: hidden;
+        }
+
+        .typewriter-container {
+            position: relative;
+            margin-bottom: 30px;
+            min-height: 40px;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        .typewriter-container.visible {
+            opacity: 1;
+        }
+
+        .typewriter {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #222;
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .typewriter span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: typeIn 0.1s ease-out forwards;
+        }
+
+        @keyframes typeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-form {
+            position: relative;
+        }
+
+        .login-form .input-group {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            margin: 0;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #333;
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .login-form input:focus {
+            border-color: #007bff;
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.2);
+            outline: none;
+        }
+
+        .login-form .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .login-form input:focus + .input-icon {
+            color: #007bff;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-form button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .login-form button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+        }
+
+        .login-form button:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        body.fsa-theme .login-form button {
+            background: linear-gradient(135deg, #28a745, #218838);
+            box-shadow: 0 6px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        body.fsa-theme .login-form button:hover {
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+        }
+
+        body.fsa-theme .login-form input:focus {
+            border-color: #28a745;
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.2);
+        }
+
+        body.fsa-theme .login-form input:focus + .input-icon {
+            color: #28a745;
+        }
+
+        body.admin-theme .login-form button {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            box-shadow: 0 6px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        body.admin-theme .login-form button:hover {
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+        }
+
+        body.admin-theme .login-form input:focus {
+            border-color: #dc3545;
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.2);
+        }
+
+        body.admin-theme .login-form input:focus + .input-icon {
+            color: #dc3545;
+        }
+
+        .hero {
+            width: 100%;
+            text-align: center;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            padding: 20px;
+            position: absolute;
+            bottom: 10px;
+            color: #333;
+            font-weight: 400;
+        }
+
+        .hero img {
+            height: 18px;
+            width: auto;
+            vertical-align: middle;
+            margin: 0 5px;
+            filter: brightness(0);
+        }
+
+        .hero span {
+            font-weight: 600;
+            color: #007bff;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 20px;
+                height: 70px;
+                gap: 8px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .logo {
+                height: 30px;
+            }
+
+            .brand-name {
+                font-size: 1.6rem;
+            }
+
+            .login-as-text {
+                font-size: 1.2rem;
+            }
+
+            .toggle-container {
+                width: 400px;
+                height: 60px;
+                font-size: 1.4rem;
+            }
+
+            .login-container {
+                padding: 40px;
+                max-width: 550px;
+            }
+
+            .typewriter {
+                font-size: 1.4rem;
+            }
+
+            .hero {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 0 15px;
+            }
+
+            .brand-name {
+                font-size: 1.3rem;
+            }
+
+            .login-as-text {
+                font-size: 1rem;
+            }
+
+            .toggle-container {
+                width: 300px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+
+            .login-container {
+                padding: 30px;
+                max-width: 400px;
+                min-width: 340px;
+            }
+
+            .typewriter {
+                font-size: 1.2rem;
+            }
+
+            .hero {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body class="fsa-theme">
+    <div class="overlay"></div>
+
+    <nav class="navbar">
+        <img src="/static/squares.png" alt="Vendor's Bay Logo" class="logo">
+        <span class="brand-name">Vendor's Bay</span>
+    </nav>
+
+    <div class="login-as-text">Login as</div>
+
+    <div class="toggle-container">
+        <div class="slider"></div>
+        <div class="toggle-option active" onclick="switchForm('fsa')">Agent</div>
+        <div class="toggle-option" onclick="switchForm('admin')">Admin</div>
+    </div>
+
+    <div class="login-container">
+        <div class="typewriter-container">
+            <span class="typewriter" id="typewriter-text"></span>
+        </div>
+        <form class="login-form">
+            <div class="input-group">
+                <input type="text" name="username" placeholder="User ID" required>
+                <span class="input-icon">👤</span>
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Password" required>
+                <span class="input-icon">🔒</span>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <footer class="hero">
+        <p>© 2025 Vendor's Bay | Powered by <img src="/static/gear.png" alt="Gear Icon"> <span>TSC Tools</span></p>
+    </footer>
+
+    <script>
+        function typeWriter(text, elementId) {
+            const element = document.getElementById(elementId);
+            const container = element.parentElement;
+            
+            element.innerHTML = '';
+            container.classList.remove('visible');
+            
+            const chars = text.split('').map((char, index) => {
+                const span = document.createElement('span');
+                span.textContent = char === ' ' ? '\u00A0' : char; 
+                span.style.animationDelay = `${index * 0.08}s`; 
+                return span;
+            });
+            
+            chars.forEach(char => element.appendChild(char));
+            
+            requestAnimationFrame(() => {
+                container.classList.add('visible');
+            });
+        }
+    
+        function switchForm(type) {
+            const slider = document.querySelector('.slider');
+            const toggleOptions = document.querySelectorAll('.toggle-option');
+            const body = document.body;
+    
+            if (type === 'fsa' && !body.classList.contains('fsa-theme')) {
+                slider.classList.remove('admin');
+                toggleOptions[0].classList.add('active');
+                toggleOptions[1].classList.remove('active');
+                body.classList.remove('admin-theme');
+                body.classList.add('fsa-theme');
+                typeWriter('Hi Agent!', 'typewriter-text');
+            } else if (type === 'admin' && !body.classList.contains('admin-theme')) {
+                slider.classList.add('admin');
+                toggleOptions[0].classList.remove('active');
+                toggleOptions[1].classList.add('active');
+                body.classList.remove('fsa-theme');
+                body.classList.add('admin-theme');
+                typeWriter('Hi Admin!', 'typewriter-text');
+            }
+        }
+    
+        window.onload = () => {
+            typeWriter('Hi Agent!', 'typewriter-text');
+        };
+    
+        // Add debugging
+        const form = document.querySelector('.login-form');
+        if (!form) {
+            console.error('Login form not found! Check your HTML class name.');
+        } else {
+            console.log('Form found, attaching event listener');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                console.log('Form submitted');
+                
+                const isAgentMode = document.body.classList.contains('fsa-theme');
+                console.log('Agent mode:', isAgentMode);
+                
+                const usernameInput = document.querySelector('input[name="username"]');
+                const passwordInput = document.querySelector('input[name="password"]');
+                
+                if (!usernameInput || !passwordInput) {
+                    console.error('Username or password input not found!');
+                    alert('Form setup error: input fields missing');
+                    return;
+                }
+                
+                const username = usernameInput.value;
+                const password = passwordInput.value;
+                console.log('Username entered:', username);
+                console.log('Password entered:', password);
+                
+                if (isAgentMode) {
+                    if (username === 'TSC111' && password === 'TSC111') {
+                        console.log('Credentials correct, redirecting to agent.html');
+                        window.location.href = 'agent.html';
+                    } else {
+                        console.log('Invalid credentials');
+                        alert('Invalid username or password. Please use TSC111/TSC111 for agent login.');
+                    }
+                } else {
+                    console.log('Admin mode login');
+                    alert('Login submitted (demo only)');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
