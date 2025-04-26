@@ -67,11 +67,11 @@
             letter-spacing: -0.025em;
             display: flex;
             align-items: center;
-            gap: 10px; /* Space between text and icon */
+            gap: 10px;
         }
         .dashboard-title i {
-            font-size: 1.75rem; /* Adjust icon size */
-            color: #3b82f6; /* Match header gradient start color */
+            font-size: 1.75rem;
+            color: #3b82f6;
         }
         .card {
             background: #fff;
@@ -133,10 +133,26 @@
             gap: 6px;
             justify-content: center;
             width: 80%;
+            max-width: 400px;
+            white-space: nowrap;
         }
         .status.pending {
             background: #f1f5f9;
             color: #64748b;
+        }
+        .status.approved {
+            background: #d1fae5;
+            color: #059669;
+        }
+        .status.rejected {
+            background: #fee2e2;
+            color: #dc2626;
+            white-space: normal;
+            overflow-wrap: break-word;
+        }
+        .status.rejected:hover {
+            background: #fecaca;
+            z-index: 10;
         }
         .status i {
             font-size: 1rem;
@@ -224,16 +240,16 @@
             .vendor-table th, .vendor-table td { padding: 14px 20px; }
         }
         @media (max-width: 768px) {
-            .card {margin-bottom: 20px;}
+            .card { margin-bottom: 20px; }
             .header { padding: 16px 24px; margin-top: 70px; }
             .dashboard-title { margin-bottom: 20px; font-size: 1.4rem; gap: 14px; }
             .content { padding: 16px; padding-top: 24px; }
             .vendor-table { display: block; overflow-x: auto; scrollbar-width: thin; }
             .vendor-table th, .vendor-table td { padding: 12px 22px; }
             .dashboard-title i {
-            font-size: 1.4rem; /* Adjust icon size */
-            color: #3b82f6; /* Match header gradient start color */
-        }
+                font-size: 1.4rem;
+                color: #3b82f6;
+            }
         }
     </style>
 </head>
@@ -267,27 +283,62 @@
     </div>
 
     <script>
+        function getStatusDisplay(vendor) {
+            let statusClass = 'pending';
+            let statusText = 'Pending';
+            let icon = 'fa-clock';
+    
+            if (vendor.status === 'approved') {
+                statusClass = 'approved';
+                statusText = 'Approved';
+                icon = 'fa-check-double';
+            } else if (vendor.status === 'rejected') {
+                statusClass = 'rejected';
+                statusText = `Rejected${vendor.rejectionReason && typeof vendor.rejectionReason === 'string' ? ' - ' + vendor.rejectionReason : ''}`;
+                icon = 'fa-times';
+            } else if (vendor.form_submitted === 'true' || vendor.form_submitted === true) {
+                statusClass = 'pending';
+                statusText = 'Submitted';
+                icon = 'fa-check';
+            }
+    
+            return <span class="status ${statusClass}" title="${statusText}" aria-label="${statusText}"><i class="fas ${icon}"></i> ${statusText}</span>;
+        }
+    
+        function getActionDisplay(vendor) {
+            if (vendor.form_submitted === 'true' || vendor.form_submitted === true) {
+                if (vendor.status === 'approved') {
+                    return <span class="sap-label">Approved${vendor.sapId ? ' - SAP ID: ' + vendor.sapId : ''}</span>;
+                } else if (vendor.status === 'rejected') {
+                    return <span class="sap-label">Rejected</span>;
+                } else {
+                    return <span class="sap-label">Awaiting S&P</span>;
+                }
+            }
+            return <span class="sap-label">Pending Submission</span>;
+        }
+    
         function populateTable(vendors) {
             const tbody = document.getElementById('vendorTableBody');
             tbody.innerHTML = '';
             vendors.forEach(vendor => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${vendor.name || 'Unnamed Vendor'}</td>
+                    <td>${vendor.vendorName || 'Unnamed Vendor'}</td>
                     <td>${vendor.process_initiated === 'true' || vendor.process_initiated === true ? '<i class="fas fa-check-circle" style="color: #059669;"></i>' : ''}</td>
                     <td>${vendor.form_submitted === 'true' || vendor.form_submitted === true ? '<i class="fas fa-check-circle" style="color: #059669;"></i>' : ''}</td>
-                    <td class="status-cell"><span class="status pending"><i class="fas fa-clock"></i> Pending</span></td>
-                    <td class="action-cell"><span class="sap-label">Pending</span></td>
+                    <td class="status-cell">${getStatusDisplay(vendor)}</td>
+                    <td class="action-cell">${getActionDisplay(vendor)}</td>
                 `;
                 tbody.appendChild(tr);
             });
         }
-
+    
         function loadFromLocalStorage() {
             const vendors = JSON.parse(localStorage.getItem('vendors') || '[]');
             populateTable(vendors);
         }
-
+    
         function loadFromCSV(file) {
             const reader = new FileReader();
             reader.onload = (event) => {
@@ -295,19 +346,19 @@
                 const lines = csv.split('\n').filter(line => line.trim() !== '');
                 const headers = lines[0].split(',').map(header => header.trim());
                 const vendors = lines.slice(1).map(line => {
-                    const values = line.split(',').map(val => val.replace(/^"|"$/g, '')); // Remove quotes
+                    const values = line.split(',').map(val => val.replace(/^"|"$/g, ''));
                     const vendor = {};
                     headers.forEach((header, index) => {
                         vendor[header] = values[index] || '';
                     });
                     return vendor;
                 });
-                localStorage.setItem('vendors', JSON.stringify(vendors)); // Update localStorage
+                localStorage.setItem('vendors', JSON.stringify(vendors));
                 populateTable(vendors);
             };
             reader.readAsText(file);
         }
-
+    
         document.addEventListener('DOMContentLoaded', () => {
             loadFromLocalStorage();
             const header = document.querySelector('.header');
@@ -316,13 +367,15 @@
                 <button class="action-btn" onclick="window.location.href='agent_add_vendor.html'"><i class="fas fa-plus"></i> Add Vendor</button>
             `;
             const fileInput = document.getElementById('loadVendors');
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    loadFromCSV(file);
-                }
-            });
-            setInterval(loadFromLocalStorage, 5000); // Auto-refresh every 5 seconds
+            if (fileInput) {
+                fileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        loadFromCSV(file);
+                    }
+                });
+            }
+            setInterval(loadFromLocalStorage, 5000);
         });
     </script>
 </body>

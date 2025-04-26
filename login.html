@@ -22,11 +22,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-             justify-content: center;
-             color: #333;
-             position: relative;
-            }
-        
+            justify-content: center;
+            color: #333;
+            position: relative;
+        }
 
         .overlay {
             position: absolute;
@@ -331,10 +330,8 @@
         }
 
         @media (max-width: 768px) {
-
-            body
-            {
-                min-height:700px
+            body {
+                min-height: 700px;
             }
 
             .navbar {
@@ -460,8 +457,8 @@
             
             const chars = text.split('').map((char, index) => {
                 const span = document.createElement('span');
-                span.textContent = char === ' ' ? '\u00A0' : char; 
-                span.style.animationDelay = `${index * 0.08}s`; 
+                span.textContent = char === ' ' ? '\u00A0' : char;
+                span.style.animationDelay = `${index * 0.08}s`;
                 return span;
             });
             
@@ -498,7 +495,6 @@
             typeWriter('Hi Agent!', 'typewriter-text');
         };
     
-        // Add debugging
         const form = document.querySelector('.login-form');
         if (!form) {
             console.error('Login form not found! Check your HTML class name.');
@@ -530,12 +526,17 @@
                         console.log('Credentials correct, redirecting to agent.html');
                         window.location.href = 'agent.html';
                     } else {
-                        console.log('Invalid credentials');
-                        alert('Invalid username or password. Please use TSC111/TSC111 for agent login.');
+                        console.log('Invalid credentials for agent');
+                        alert('Invalid username or password for agent. Please use TSC111/TSC111 for agent login.');
                     }
                 } else {
-                    console.log('Admin mode login');
-                    alert('Login submitted (demo only)');
+                    if (username === 'TSC111' && password === 'TSC111') {
+                        console.log('Credentials correct, redirecting to admin.html');
+                        window.location.href = 'admin.html';
+                    } else {
+                        console.log('Invalid credentials for admin');
+                        alert('Invalid username or password for admin. Please use TSC111/TSC111 for admin login.');
+                    }
                 }
             });
         }
