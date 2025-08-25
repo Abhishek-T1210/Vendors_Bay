@@ -10,10 +10,10 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+ 
         body {
             font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-            background:#f4f7fa;
+            background: #f4f7fa;
             min-height: 100vh;
             padding: 50px;
             display: flex;
@@ -66,7 +66,7 @@
             left: 50px;
             width: 320px;
             height: 60px;
-            background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
+            background: linear-gradient(90deg, #1e3a8a, #2563eb);
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             display: flex;
@@ -283,12 +283,12 @@
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             text-align: center;
-            padding: 20px;
+            padding: 12px;
             font-size: 14px;
             font-weight: 600;
             color: #1e40af;
             word-wrap: break-word;
-            overflow: hidden;
+            overflow: auto;
             z-index: 1;
             cursor: pointer;
         }
@@ -523,11 +523,18 @@
         <div class="form-header">
             <h2>COMFORT GRID TECHNOLOGIES PVT LTD.</h2>
         </div>
-
+        <div class="form-indicator">
+            <div class="form-title">Form <span class="large-a">A</span></div>
+            <div class="form-subtitle">Basic Details</div>
+        </div>
         <form id="vendor-form" method="POST" enctype="multipart/form-data">
             <!-- Form A -->
             <div class="form-content active" id="form-a">
                 <div class="form-fields" style="margin-top: 180px;">
+                    <div class="form-group">
+                        <label for="agent-name">Agent Name</label>
+                        <input type="text" id="agent-name" name="agent-name" required>
+                    </div>
                     <div class="form-group">
                         <label for="name">Company Name</label>
                         <input type="text" id="name" name="name" required>
@@ -816,7 +823,7 @@
                         <div class="form-group full-width">
                             <div class="declaration-group">
                                 <input type="checkbox" id="declaration" name="declaration" required>
-                                <label for="declaration" class="no-asterisk">I / We hereby declare that all statements made in this application form for enlistment of Vendor are true, complete and correct to the best of my / our knowledge. In the event of any information being found false or incorrect, the enlistment and any Purchase Orders placed on our firm may be cancelled.</label>
+                                <label for="declaration" class="no-asterisk">I / We hereby declare that all statements made in this application form for enlistment of vendor are true, complete and correct to the best of my / our knowledge and belief. In the event of any information being found false or incorrect, the enlistment and any Purchase Orders placed on our firm may be cancelled.</label>
                             </div>
                         </div>
                     </div>
@@ -842,87 +849,193 @@
             'form-c': document.getElementById('form-c')
         };
         let currentForm = 'form-a';
-    
+        let editingVendorId = null;
+
         function showForm(formId) {
-            Object.values(forms).forEach(form => {
-                form.classList.remove('active');
-            });
+            Object.values(forms).forEach(form => form.classList.remove('active'));
             forms[formId].classList.add('active');
+            const formIndicator = document.querySelector('.form-indicator');
+            const formTitles = {
+                'form-a': 'Basic Details',
+                'form-b': 'Commercial & Additional Details',
+                'form-c': 'Bank Details & Declaration'
+            };
+            formIndicator.querySelector('.form-title').innerHTML = `Form <span class="large-a">${formId.split('-')[1].toUpperCase()}</span>`;
+            formIndicator.querySelector('.form-subtitle').textContent = formTitles[formId];
             currentForm = formId;
         }
-    
-        // Function to Update Vendor Data in localStorage
-        function updateVendorData(data, isFullSubmission = false) {
-            let vendors = JSON.parse(localStorage.getItem('vendors') || '[]');
-            const existingVendorIndex = vendors.findIndex(v => v.name === data.name);
-    
-            const vendorData = {
-                id: Date.now(), // Unique ID for each submission
-                vendorName: data.name || "Unknown Vendor", // Fallback if name is missing
-                agentName: "Agent Placeholder", // Replace with actual agent name if available
-                issueDate: new Date().toISOString().split('T')[0], // Current date (e.g., 2025-04-02)
-                companyName: data.name || "Unknown Vendor",
-                architectName: data["chief-executive"],
-                companyCategory: data["company-category"],
-                gstNumber: data["gst-number"],
-                relationshipManager: data["relationship-manager"],
-                email: data["email-id"],
-                mobile: data["mobile"],
-                landline: data["landline"] || "N/A",
-                address: data["address"],
-                profileImage: data["profile-image"] || "",
-                gstNumberB: data["gst-number-b"],
-                cinNumber: data["cin-number"],
-                gstCertificate: data["gst-certificate"] || "",
-                panPhoto: data["pan-photo"] || "",
-                panName: data["pan-name"],
-                panNumber: data["pan-number"],
-                tanNumber: data["tan-number"],
-                aadharFront: data["aadhar-front"] || "",
-                aadharBack: data["aadhar-back"] || "",
-                aadharNumber: data["aadhar-number"],
-                aadharAddress: data["aadhar-address"],
-                eInvoice: data["e-invoice"],
-                eInvoiceImage: data["e-invoice-image"] || "",
-                yearsServed: data["years-served"],
-                materialsProducts: data["materials-products"],
-                leadTime: data["lead-time"],
-                msmeCertificate: data["msme-certificate"] || "",
-                undertakingLetter: data["undertaking-letter"] || "",
-                tanCertificate: data["tan-certificate"] || "",
-                shopLicense: data["shop-license"] || "",
-                accountName: data["account-name"],
-                accountNumber: data["account-number"],
-                ifscCode: data["ifsc-code"],
-                bankName: data["bank-name"],
-                bankAddress: data["bank-address"] || "N/A",
-                paymentTerms: data["payment-terms"] || "N/A",
-                cancelledCheque: data["cancelled-cheque"] || "",
-                declaration: data["declaration"] === "true",
-                status: "pending",
-                process_initiated: true,
-                form_submitted: isFullSubmission
-            };
-    
-            console.log('Saving to localStorage:', vendorData); // Debug log
-    
-            if (existingVendorIndex !== -1) {
-                vendors[existingVendorIndex] = { ...vendors[existingVendorIndex], ...vendorData };
+
+        function updateFilePreview(inputId, fileName) {
+            const input = document.getElementById(inputId);
+            const pdfPreview = document.getElementById(`${inputId}-pdf-preview`);
+            const imgPreview = document.getElementById(`${inputId}-preview`);
+            const container = input.parentElement;
+
+            if (fileName) {
+                input.dataset.fileName = fileName;
+                container.classList.add('has-preview');
+                pdfPreview.textContent = fileName;
+                pdfPreview.style.display = 'flex';
+                imgPreview.style.display = 'none';
             } else {
-                vendors.push(vendorData);
+                input.dataset.fileName = '';
+                container.classList.remove('has-preview');
+                pdfPreview.style.display = 'none';
+                imgPreview.style.display = 'none';
             }
-    
-            localStorage.setItem('vendors', JSON.stringify(vendors));
         }
-    
-        // Function to generate and download formatted Excel file using ExcelJS
+
+        function loadVendorData() {
+            const params = new URLSearchParams(window.location.search);
+            editingVendorId = params.get('vendorId');
+            if (editingVendorId) {
+                try {
+                    const vendors = JSON.parse(localStorage.getItem('vendors') || '[]');
+                    const vendor = vendors.find(v => v.id === parseInt(editingVendorId));
+                    if (vendor) {
+                        // Form A
+                        document.getElementById('agent-name').value = vendor.agentName || '';
+                        document.getElementById('name').value = vendor.companyName || '';
+                        document.getElementById('chief-executive').value = vendor.architectName || '';
+                        document.getElementById('company-category').value = vendor.companyCategory || '';
+                        document.getElementById('gst-number').value = vendor.gstNumber || '';
+                        document.getElementById('relationship-manager').value = vendor.relationshipManager || '';
+                        document.getElementById('email-id').value = vendor.email || '';
+                        document.getElementById('mobile').value = vendor.mobile || '';
+                        document.getElementById('landline').value = vendor.landline || '';
+                        document.getElementById('address').value = vendor.address || '';
+
+                        // Form B
+                        document.getElementById('gst-number-b').value = vendor.gstNumberB || '';
+                        document.getElementById('cin-number').value = vendor.cinNumber || '';
+                        document.getElementById('pan-name').value = vendor.panName || '';
+                        document.getElementById('pan-number').value = vendor.panNumber || '';
+                        document.getElementById('tan-number').value = vendor.tanNumber || '';
+                        document.getElementById('aadhar-number').value = vendor.aadharNumber || '';
+                        document.getElementById('aadhar-address').value = vendor.aadharAddress || '';
+                        document.getElementById('years-served').value = vendor.yearsServed || '';
+                        document.getElementById('materials-products').value = vendor.materialsProducts || '';
+                        document.getElementById('lead-time').value = vendor.leadTime || '';
+
+                        // File uploads (display file names)
+                        updateFilePreview('gst-certificate', vendor.gstCertificate || '');
+                        updateFilePreview('pan-photo', vendor.panPhoto || '');
+                        updateFilePreview('aadhar-front', vendor.aadharFront || '');
+                        updateFilePreview('aadhar-back', vendor.aadharBack || '');
+                        updateFilePreview('e-invoice-image', vendor.eInvoiceImage || '');
+                        updateFilePreview('msme-certificate', vendor.msmeCertificate || '');
+                        updateFilePreview('undertaking-letter', vendor.undertakingLetter || '');
+                        updateFilePreview('tan-certificate', vendor.tanCertificate || '');
+                        updateFilePreview('shop-license', vendor.shopLicense || '');
+
+                        // E-Invoice radio buttons
+                        const eInvoiceValue = vendor.eInvoice || 'no';
+                        document.querySelector(`input[name="e-invoice"][value="${eInvoiceValue}"]`).checked = true;
+                        document.getElementById('e-invoice-upload').style.display = eInvoiceValue === 'yes' ? 'block' : 'none';
+
+                        // Form C
+                        document.getElementById('account-name').value = vendor.accountName || '';
+                        document.getElementById('account-number').value = vendor.accountNumber || '';
+                        document.getElementById('ifsc-code').value = vendor.ifscCode || '';
+                        document.getElementById('bank-name').value = vendor.bankName || '';
+                        document.getElementById('bank-address').value = vendor.bankAddress || '';
+                        document.getElementById('payment-terms').value = vendor.paymentTerms || '';
+                        updateFilePreview('cancelled-cheque', vendor.cancelledCheque || '');
+
+                        // Declaration checkbox
+                        document.getElementById('declaration').checked = vendor.declaration || false;
+
+                        // Update button states
+                        updateButtonStates();
+                    } else {
+                        console.error('Vendor not found for ID:', editingVendorId);
+                    }
+                } catch (error) {
+                    console.error('Error loading vendor data:', error);
+                }
+            }
+        }
+
+        function getFileValue(val) {
+            if (typeof val === 'object' && val !== null && val.name) {
+                return val.name;
+            }
+            return val || '';
+        }
+
+        function updateVendorData(data, isFullSubmission = false) {
+            try {
+                let vendors = JSON.parse(localStorage.getItem('vendors') || '[]');
+                const existingVendorIndex = editingVendorId ? vendors.findIndex(v => v.id === parseInt(editingVendorId)) : vendors.findIndex(v => v.name === data.name);
+
+                const vendorData = {
+                    id: editingVendorId ? parseInt(editingVendorId) : Date.now(),
+                    vendorName: data['name'] || 'Unknown Vendor',
+                    agentName: data['agent-name'] || 'N/A',
+                    issueDate: new Date().toISOString().split('T')[0],
+                    companyName: data['name'] || 'Unknown Vendor',
+                    architectName: data['chief-executive'] || '',
+                    companyCategory: data['company-category'] || '',
+                    gstNumber: data['gst-number'] || '',
+                    relationshipManager: data['relationship-manager'] || '',
+                    email: data['email-id'] || '',
+                    mobile: data['mobile'] || '',
+                    landline: data['landline'] || 'N/A',
+                    address: data['address'] || '',
+                    gstNumberB: data['gst-number-b'] || '',
+                    cinNumber: data['cin-number'] || '',
+                    gstCertificate: getFileValue(data['gst-certificate']),
+                    panPhoto: getFileValue(data['pan-photo']),
+                    panName: data['pan-name'] || '',
+                    panNumber: data['pan-number'] || '',
+                    tanNumber: data['tan-number'] || '',
+                    aadharFront: getFileValue(data['aadhar-front']),
+                    aadharBack: getFileValue(data['aadhar-back']),
+                    aadharNumber: data['aadhar-number'] || '',
+                    aadharAddress: data['aadhar-address'] || '',
+                    eInvoice: data['e-invoice'] || 'no',
+                    eInvoiceImage: getFileValue(data['e-invoice-image']),
+                    yearsServed: data['years-served'] || '',
+                    materialsProducts: data['materials-products'] || '',
+                    leadTime: data['lead-time'] || '',
+                    msmeCertificate: getFileValue(data['msme-certificate']),
+                    undertakingLetter: getFileValue(data['undertaking-letter']),
+                    tanCertificate: getFileValue(data['tan-certificate']),
+                    shopLicense: getFileValue(data['shop-license']),
+                    accountName: data['account-name'] || '',
+                    accountNumber: data['account-number'] || '',
+                    ifscCode: data['ifsc-code'] || '',
+                    bankName: data['bank-name'] || '',
+                    bankAddress: data['bank-address'] || 'N/A',
+                    paymentTerms: data['payment-terms'] || 'N/A',
+                    cancelledCheque: getFileValue(data['cancelled-cheque']),
+                    declaration: data['declaration'] === 'true',
+                    status: 'pending', // Reset to pending on edit
+                    process_initiated: true,
+                    form_submitted: isFullSubmission,
+                    rejectionReason: '' // Clear rejection reason on edit
+                };
+
+                if (existingVendorIndex !== -1) {
+                    vendors[existingVendorIndex] = { ...vendors[existingVendorIndex], ...vendorData };
+                } else {
+                    vendors.push(vendorData);
+                }
+
+                localStorage.setItem('vendors', JSON.stringify(vendors));
+                console.log('Vendor data saved:', vendorData);
+            } catch (error) {
+                console.error('Error saving vendor data:', error);
+            }
+        }
+
         async function generateExcelFile(formData) {
             try {
                 const workbook = new ExcelJS.Workbook();
                 const worksheet = workbook.addWorksheet('Vendor Details', {
                     properties: { defaultRowHeight: 20 }
                 });
-    
+
                 const headerStyle = {
                     font: { bold: true, size: 12, color: { argb: 'FFFFFFFF' } },
                     fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A8A' } },
@@ -939,32 +1052,33 @@
                     border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } },
                     alignment: { wrapText: true }
                 };
-    
+
                 let rowIndex = 1;
-    
+
                 worksheet.mergeCells(`A${rowIndex}:D${rowIndex}`);
                 worksheet.getCell(`A${rowIndex}`).value = 'Vendor Onboarding Form';
                 worksheet.getCell(`A${rowIndex}`).style = headerStyle;
                 worksheet.getRow(rowIndex).height = 30;
                 rowIndex += 2;
-    
+
                 worksheet.mergeCells(`A${rowIndex}:D${rowIndex}`);
                 worksheet.getCell(`A${rowIndex}`).value = 'Form A - Basic Details';
                 worksheet.getCell(`A${rowIndex}`).style = headerStyle;
                 rowIndex++;
-    
+
                 const formAData = [
-                    ["Company Name", formData["name"]],
-                    ["Architect Name", formData["chief-executive"]],
-                    ["Company Category", formData["company-category"]],
-                    ["GST Number", formData["gst-number"]],
-                    ["Relationship Manager", formData["relationship-manager"]],
-                    ["Email ID", formData["email-id"]],
-                    ["Mobile Number", formData["mobile"]],
-                    ["Landline", formData["landline"] || "N/A"],
-                    ["Address", formData["address"]]
+                    ['Agent Name', formData['agent-name']],
+                    ['Company Name', formData['name']],
+                    ['Architect Name', formData['chief-executive']],
+                    ['Company Category', formData['company-category']],
+                    ['GST Number', formData['gst-number']],
+                    ['Relationship Manager', formData['relationship-manager']],
+                    ['Email ID', formData['email-id']],
+                    ['Mobile Number', formData['mobile']],
+                    ['Landline', formData['landline'] || 'N/A'],
+                    ['Address', formData['address']]
                 ];
-    
+
                 formAData.forEach(([label, value]) => {
                     worksheet.getCell(`A${rowIndex}`).value = label;
                     worksheet.getCell(`A${rowIndex}`).style = labelStyle;
@@ -973,21 +1087,21 @@
                     worksheet.mergeCells(`B${rowIndex}:D${rowIndex}`);
                     rowIndex++;
                 });
-    
+
                 rowIndex++;
-    
+
                 worksheet.mergeCells(`A${rowIndex}:D${rowIndex}`);
                 worksheet.getCell(`A${rowIndex}`).value = 'Form B - Commercial & Additional Details';
                 worksheet.getCell(`A${rowIndex}`).style = headerStyle;
                 rowIndex++;
-    
+
                 const imageFieldsB = [
                     'gst-certificate', 'pan-photo', 'aadhar-front', 'aadhar-back', 'e-invoice-image',
                     'msme-certificate', 'undertaking-letter', 'tan-certificate', 'shop-license'
                 ];
                 const fileNamesB = {};
                 const imagePromises = [];
-    
+
                 for (const field of imageFieldsB) {
                     const input = document.getElementById(field);
                     if (input.files[0]) {
@@ -1001,33 +1115,33 @@
                             }));
                         }
                     } else {
-                        fileNamesB[field] = "";
+                        fileNamesB[field] = input.dataset.fileName || '';
                     }
                 }
-    
+
                 const formBData = [
-                    ["GST Number (B)", formData["gst-number-b"]],
-                    ["CIN Number", formData["cin-number"]],
-                    ["GST Certificate", fileNamesB['gst-certificate']],
-                    ["Name as per PAN", formData["pan-name"]],
-                    ["PAN Number", formData["pan-number"]],
-                    ["TAN Number", formData["tan-number"]],
-                    ["PAN Photo", fileNamesB['pan-photo']],
-                    ["Aadhar Number", formData["aadhar-number"]],
-                    ["Address as per Aadhar", formData["aadhar-address"]],
-                    ["Aadhar Front", fileNamesB['aadhar-front']],
-                    ["Aadhar Back", fileNamesB['aadhar-back']],
-                    ["No. of Years Served", formData["years-served"]],
-                    ["Materials/Products/Service", formData["materials-products"]],
-                    ["Lead Time", formData["lead-time"]],
-                    ["E-Invoice Applicability", formData["e-invoice"]],
-                    ["E-Invoice Image", fileNamesB['e-invoice-image']],
-                    ["MSME Certificate", fileNamesB['msme-certificate']],
-                    ["Undertaking Letter", fileNamesB['undertaking-letter']],
-                    ["TAN Certificate", fileNamesB['tan-certificate']],
-                    ["Shop License", fileNamesB['shop-license']]
+                    ['GST Number (B)', formData['gst-number-b']],
+                    ['CIN Number', formData['cin-number']],
+                    ['GST Certificate', fileNamesB['gst-certificate']],
+                    ['Name as per PAN', formData['pan-name']],
+                    ['PAN Number', formData['pan-number']],
+                    ['TAN Number', formData['tan-number']],
+                    ['PAN Photo', fileNamesB['pan-photo']],
+                    ['Aadhar Number', formData['aadhar-number']],
+                    ['Address as per Aadhar', formData['aadhar-address']],
+                    ['Aadhar Front', fileNamesB['aadhar-front']],
+                    ['Aadhar Back', fileNamesB['aadhar-back']],
+                    ['No. of Years Served', formData['years-served']],
+                    ['Materials/Products/Service', formData['materials-products']],
+                    ['Lead Time', formData['lead-time']],
+                    ['E-Invoice Applicability', formData['e-invoice']],
+                    ['E-Invoice Image', fileNamesB['e-invoice-image']],
+                    ['MSME Certificate', fileNamesB['msme-certificate']],
+                    ['Undertaking Letter', fileNamesB['undertaking-letter']],
+                    ['TAN Certificate', fileNamesB['tan-certificate']],
+                    ['Shop License', fileNamesB['shop-license']]
                 ];
-    
+
                 formBData.forEach(([label, value]) => {
                     worksheet.getCell(`A${rowIndex}`).value = label;
                     worksheet.getCell(`A${rowIndex}`).style = labelStyle;
@@ -1036,24 +1150,26 @@
                     worksheet.mergeCells(`B${rowIndex}:D${rowIndex}`);
                     rowIndex++;
                 });
-    
+
                 const imagesB = await Promise.all(imagePromises);
                 imagesB.forEach((img) => {
-                    const imageId = workbook.addImage({ base64: img.base64, extension: 'png' });
-                    worksheet.addImage(imageId, { tl: { col: 1, row: rowIndex - 1 }, br: { col: 2, row: rowIndex + 2 } });
-                    worksheet.getCell(`A${rowIndex}`).value = `${img.field.replace('-', ' ').toUpperCase()}`;
-                    worksheet.getCell(`A${rowIndex}`).style = labelStyle;
-                    rowIndex += 3;
+                    if (img.base64) {
+                        const imageId = workbook.addImage({ base64: img.base64, extension: 'png' });
+                        worksheet.addImage(imageId, { tl: { col: 1, row: rowIndex - 1 }, br: { col: 2, row: rowIndex + 2 } });
+                        worksheet.getCell(`A${rowIndex}`).value = `${img.field.replace('-', ' ').toUpperCase()}`;
+                        worksheet.getCell(`A${rowIndex}`).style = labelStyle;
+                        rowIndex += 3;
+                    }
                 });
                 rowIndex++;
-    
+
                 worksheet.mergeCells(`A${rowIndex}:D${rowIndex}`);
                 worksheet.getCell(`A${rowIndex}`).value = 'Form C - Bank Details & Declaration';
                 worksheet.getCell(`A${rowIndex}`).style = headerStyle;
                 rowIndex++;
-    
+
                 const chequeInput = document.getElementById('cancelled-cheque');
-                let chequeName = "";
+                let chequeName = chequeInput.dataset.fileName || '';
                 let chequeBase64 = null;
                 if (chequeInput.files[0]) {
                     chequeName = chequeInput.files[0].name;
@@ -1065,18 +1181,18 @@
                         });
                     }
                 }
-    
+
                 const formCData = [
-                    ["Account Name", formData["account-name"]],
-                    ["Account Number", formData["account-number"]],
-                    ["IFSC Code", formData["ifsc-code"]],
-                    ["Bank Name", formData["bank-name"]],
-                    ["Bank Address", formData["bank-address"] || "N/A"],
-                    ["Payment Terms", formData["payment-terms"] || "N/A"],
-                    ["Cancelled Cheque", chequeName],
-                    ["Declaration", formData["declaration"] === "true" ? "Yes" : "No"]
+                    ['Account Name', formData['account-name']],
+                    ['Account Number', formData['account-number']],
+                    ['IFSC Code', formData['ifsc-code']],
+                    ['Bank Name', formData['bank-name']],
+                    ['Bank Address', formData['bank-address'] || 'N/A'],
+                    ['Payment Terms', formData['payment-terms'] || 'N/A'],
+                    ['Cancelled Cheque', chequeName],
+                    ['Declaration', formData['declaration'] === 'true' ? 'Yes' : 'No']
                 ];
-    
+
                 formCData.forEach(([label, value]) => {
                     worksheet.getCell(`A${rowIndex}`).value = label;
                     worksheet.getCell(`A${rowIndex}`).style = labelStyle;
@@ -1085,7 +1201,7 @@
                     worksheet.mergeCells(`B${rowIndex}:D${rowIndex}`);
                     rowIndex++;
                 });
-    
+
                 if (chequeBase64) {
                     const imageId = workbook.addImage({ base64: chequeBase64, extension: 'png' });
                     worksheet.addImage(imageId, { tl: { col: 1, row: rowIndex - 1 }, br: { col: 2, row: rowIndex + 2 } });
@@ -1093,76 +1209,72 @@
                     worksheet.getCell(`A${rowIndex}`).style = labelStyle;
                     rowIndex += 3;
                 }
-    
+
                 worksheet.getColumn('A').width = 30;
                 worksheet.getColumn('B').width = 40;
                 worksheet.getColumn('C').width = 10;
                 worksheet.getColumn('D').width = 10;
-    
+
                 const buffer = await workbook.xlsx.writeBuffer();
                 const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = `${formData["name"].replace(/[^a-zA-Z0-9]/g, '_')}.xlsx`;
+                link.download = `${formData['name'].replace(/[^a-zA-Z0-9]/g, '_')}.xlsx`;
                 link.click();
             } catch (error) {
                 console.error('Error generating Excel file:', error);
                 alert('Failed to generate Excel file. Please check the console for details.');
             }
         }
-    
-        // Mandatory Fields
+
         const mandatoryFieldsA = [
-            'name', 'chief-executive', 'company-category', 
-            'gst-number', 'relationship-manager', 'email-id', 
+            'agent-name', 'name', 'chief-executive', 'company-category',
+            'gst-number', 'relationship-manager', 'email-id',
             'mobile', 'address'
         ].map(id => document.getElementById(id));
-    
+
         const mandatoryFieldsB = [
-            'gst-number-b', 'cin-number', 'gst-certificate', 'pan-photo', 
-            'pan-name', 'pan-number', 'tan-number', 'aadhar-front', 
-            'aadhar-back', 'aadhar-number', 'aadhar-address', 'years-served', 
+            'gst-number-b', 'cin-number', 'gst-certificate', 'pan-photo',
+            'pan-name', 'pan-number', 'tan-number', 'aadhar-front',
+            'aadhar-back', 'aadhar-number', 'aadhar-address', 'years-served',
             'materials-products', 'lead-time'
         ].map(id => document.getElementById(id));
-    
+
         const mandatoryFieldsC = [
             'account-name', 'account-number', 'ifsc-code', 'bank-name', 'declaration'
         ].map(id => document.getElementById(id));
-    
+
         const radioButtonsB = document.querySelectorAll('input[name="e-invoice"]');
-    
-        // Buttons
+
         const nextA = document.getElementById('next-a');
         const prevB = document.getElementById('prev-b');
         const nextB = document.getElementById('next-b');
         const prevC = document.getElementById('prev-c');
         const submitBtn = document.getElementById('submit-btn');
-    
-        // Validation Functions
+
         function validateEmail(email) {
-            return email.includes('@');
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         }
-    
+
         function validateMobile(mobile) {
             return /^\d{10}$/.test(mobile);
         }
-    
+
         function validateAadhar(aadhar) {
             return /^\d{12}$/.test(aadhar);
         }
-    
+
         function validateNumbersOnly(value) {
             return /^\d*$/.test(value);
         }
-    
-        // Check Mandatory Fields with Validation
+
         function checkFormValidity(fields, radio = null) {
             let allValid = true;
-    
+
             fields.forEach(field => {
                 const value = field.value.trim();
                 if (field.type === 'file') {
-                    if (field.files.length === 0) {
+                    if (!field.dataset.fileName && field.files.length === 0) {
                         allValid = false;
                     }
                 } else if (field.type === 'checkbox') {
@@ -1189,160 +1301,115 @@
                     if (errorElement) errorElement.style.display = 'none';
                 }
             });
-    
+
+            const eInvoiceValue = document.querySelector('input[name="e-invoice"]:checked')?.value;
+            if (eInvoiceValue === 'yes' && !document.getElementById('e-invoice-image').dataset.fileName && !document.getElementById('e-invoice-image').files[0]) {
+                allValid = false;
+            }
+
             const radioSelected = radio ? Array.from(radio).some(r => r.checked) : true;
             return allValid && radioSelected;
         }
-    
+
         function updateButtonStates() {
             nextA.disabled = !checkFormValidity(mandatoryFieldsA);
             nextB.disabled = !checkFormValidity(mandatoryFieldsB, radioButtonsB);
             submitBtn.disabled = !checkFormValidity(mandatoryFieldsC);
         }
-    
-        // Event Listeners for Form Navigation and Submission
-        nextA.addEventListener('click', () => {
-            if (checkFormValidity(mandatoryFieldsA)) {
-                // Removed updateVendorData here to avoid partial saves
-                showForm('form-b');
-            }
-        });
-    
-        prevB.addEventListener('click', () => showForm('form-a'));
-    
-        nextB.addEventListener('click', () => {
-            if (checkFormValidity(mandatoryFieldsB, radioButtonsB)) showForm('form-c');
-        });
-    
-        prevC.addEventListener('click', () => showForm('form-b'));
-    
-        submitBtn.addEventListener('click', async () => {
-            if (checkFormValidity(mandatoryFieldsC)) {
-                console.log('Form C validation passed, proceeding with submission...');
-                const formData = {};
-                [...mandatoryFieldsA, ...mandatoryFieldsB, ...mandatoryFieldsC].forEach(field => {
-                    if (field.type === 'checkbox') {
-                        formData[field.id] = field.checked ? 'true' : 'false';
-                    } else if (field.type !== 'file') {
-                        formData[field.id] = field.value;
-                    } else {
-                        formData[field.id] = field.files[0] ? field.files[0].name : "";
-                    }
-                });
-                ['landline', 'bank-address', 'payment-terms'].forEach(id => {
-                    const field = document.getElementById(id);
-                    if (field.value.trim()) formData[id] = field.value;
-                });
-                radioButtonsB.forEach(radio => {
-                    if (radio.checked) formData['e-invoice'] = radio.value;
-                });
-    
-                console.log('Form Data before submission:', formData); // Debug log
-    
-                try {
-                    console.log('Updating vendor data...');
-                    updateVendorData(formData, true);
-                    console.log('Generating Excel file...');
-                    await generateExcelFile(formData);
-                    console.log('Excel file generated, resetting form...');
-                    document.getElementById('vendor-form').reset();
-                    showForm('form-a');
-                    updateButtonStates();
-                    console.log('Redirecting to dashboard...');
-                    window.location.href = 'agent_dashboard.html';
-                } catch (error) {
-                    console.error('Submission error:', error);
-                    alert('An error occurred during submission. Please check the console for details.');
+
+        // File input change handlers
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => {
+            input.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                const maxSize = 2 * 1024 * 1024; // 2MB
+                const fileError = document.getElementById('file-error');
+                if (file && file.size > maxSize) {
+                    fileError.style.display = 'block';
+                    input.value = '';
+                    return;
                 }
-            } else {
-                console.log('Form C validation failed. Check mandatory fields.');
-                alert('Please fill all mandatory fields correctly.');
-            }
+                fileError.style.display = 'none';
+                if (file) {
+                    input.dataset.fileName = file.name;
+                    const container = input.parentElement;
+                    const pdfPreview = container.querySelector('.pdf-preview');
+                    const imgPreview = container.querySelector('.upload-preview');
+                    container.classList.add('has-preview');
+                    if (file.type === 'application/pdf') {
+                        imgPreview.style.display = 'none';
+                        pdfPreview.textContent = file.name;
+                        pdfPreview.style.display = 'flex';
+                    } else {
+                        pdfPreview.style.display = 'none';
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            imgPreview.src = e.target.result;
+                            imgPreview.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+                updateButtonStates();
+            });
         });
-    
-        // Input Event Listeners
+
+        // E-Invoice radio button handler
+        radioButtonsB.forEach(radio => {
+            radio.addEventListener('change', () => {
+                const eInvoiceUpload = document.getElementById('e-invoice-upload');
+                eInvoiceUpload.style.display = radio.value === 'yes' ? 'block' : 'none';
+                updateButtonStates();
+            });
+        });
+
+        // Input change handlers
         mandatoryFieldsA.forEach(field => field.addEventListener('input', updateButtonStates));
         mandatoryFieldsB.forEach(field => field.addEventListener('input', updateButtonStates));
         mandatoryFieldsC.forEach(field => field.addEventListener('input', updateButtonStates));
-        radioButtonsB.forEach(radio => radio.addEventListener('change', updateButtonStates));
-    
-        // Restrict Input to Numbers Only
-        ['mobile', 'landline', 'aadhar-number', 'account-number'].forEach(id => {
-            const input = document.getElementById(id);
-            input.addEventListener('input', function() {
-                this.value = this.value.replace(/\D/g, '');
-                if (id === 'mobile') this.value = this.value.slice(0, 10);
-                if (id === 'aadhar-number') this.value = this.value.slice(0, 12);
-            });
+
+        // Navigation buttons
+        nextA.addEventListener('click', () => {
+            const formData = new FormData(document.getElementById('vendor-form'));
+            const data = Object.fromEntries(formData);
+            updateVendorData(data);
+            showForm('form-b');
         });
-    
-        // File Upload Handling
-        const uploadInputs = [
-            { input: 'gst-certificate', preview: 'gst-preview', pdfPreview: 'gst-pdf-preview' },
-            { input: 'pan-photo', preview: 'pan-preview', pdfPreview: 'pan-pdf-preview' },
-            { input: 'aadhar-front', preview: 'aadhar-front-preview', pdfPreview: 'aadhar-front-pdf-preview' },
-            { input: 'aadhar-back', preview: 'aadhar-back-preview', pdfPreview: 'aadhar-back-pdf-preview' },
-            { input: 'e-invoice-image', preview: 'e-invoice-preview', pdfPreview: 'e-invoice-pdf-preview' },
-            { input: 'msme-certificate', preview: 'msme-preview', pdfPreview: 'msme-pdf-preview' },
-            { input: 'undertaking-letter', preview: 'undertaking-preview', pdfPreview: 'undertaking-pdf-preview' },
-            { input: 'tan-certificate', preview: 'tan-preview', pdfPreview: 'tan-pdf-preview' },
-            { input: 'shop-license', preview: 'shop-preview', pdfPreview: 'shop-pdf-preview' },
-            { input: 'cancelled-cheque', preview: 'cheque-preview', pdfPreview: 'cheque-pdf-preview' }
-        ];
-    
-        uploadInputs.forEach(({ input, preview, pdfPreview }) => {
-            const inputElement = document.getElementById(input);
-            const previewElement = document.getElementById(preview);
-            const pdfPreviewElement = pdfPreview ? document.getElementById(pdfPreview) : null;
-            const containerElement = inputElement.closest('.upload-container');
-            const errorElement = document.getElementById('file-error');
-    
-            inputElement.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    if (file.size > 2 * 1024 * 1024) {
-                        errorElement.style.display = 'block';
-                        previewElement.style.display = 'none';
-                        if (pdfPreviewElement) pdfPreviewElement.style.display = 'none';
-                        containerElement.classList.remove('has-preview');
-                        this.value = '';
-                    } else {
-                        errorElement.style.display = 'none';
-                        if (file.type.startsWith('image/')) {
-                            const reader = new FileReader();
-                            reader.onload = function(e) {
-                                previewElement.src = e.target.result;
-                                previewElement.style.display = 'block';
-                                if (pdfPreviewElement) pdfPreviewElement.style.display = 'none';
-                                containerElement.classList.add('has-preview');
-                            };
-                            reader.readAsDataURL(file);
-                        } else if (file.type === 'application/pdf' && pdfPreviewElement) {
-                            previewElement.style.display = 'none';
-                            pdfPreviewElement.textContent = file.name;
-                            pdfPreviewElement.style.display = 'flex';
-                            pdfPreviewElement.style.alignItems = 'center';
-                            pdfPreviewElement.style.justifyContent = 'center';
-                            containerElement.classList.add('has-preview');
-                        }
-                    }
-                    updateButtonStates();
-                }
-            });
-    
-            previewElement.addEventListener('click', () => inputElement.click());
-            if (pdfPreviewElement) pdfPreviewElement.addEventListener('click', () => inputElement.click());
+
+        prevB.addEventListener('click', () => showForm('form-a'));
+
+        nextB.addEventListener('click', () => {
+            const formData = new FormData(document.getElementById('vendor-form'));
+            const data = Object.fromEntries(formData);
+            updateVendorData(data);
+            showForm('form-c');
         });
-    
-        const eInvoiceUpload = document.getElementById('e-invoice-upload');
-        radioButtonsB.forEach(radio => {
-            radio.addEventListener('change', function() {
-                eInvoiceUpload.style.display = this.value === 'yes' ? 'block' : 'none';
+
+        prevC.addEventListener('click', () => showForm('form-b'));
+
+        submitBtn.addEventListener('click', async () => {
+            const formData = new FormData(document.getElementById('vendor-form'));
+            const data = Object.fromEntries(formData);
+            const fileFields = [
+                'gst-certificate', 'pan-photo', 'aadhar-front', 'aadhar-back', 'e-invoice-image',
+                'msme-certificate', 'undertaking-letter', 'tan-certificate', 'shop-license', 'cancelled-cheque'
+            ];
+            fileFields.forEach(field => {
+                const input = document.getElementById(field);
+                data[field] = input.files[0] ? input.files[0] : input.dataset.fileName || '';
             });
+            data['declaration'] = document.getElementById('declaration').checked.toString();
+            await generateExcelFile(data);
+            updateVendorData(data, true);
+            alert('Form submitted successfully!');
+            window.location.href = 'agent_dashboard.html';
         });
-    
-        updateButtonStates();
-        showForm('form-a');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadVendorData();
+            updateButtonStates();
+        });
     </script>
 </body>
 </html>
